@@ -1,0 +1,27 @@
+{
+  
+    "include": ["client/src/**/*", "shared/**/*", "server/**/*"],
+    "exclude": ["node_modules", "build", "dist", "**/*.test.ts"],
+    "compilerOptions": {
+      "incremental": true,
+      "tsBuildInfoFile": "./node_modules/typescript/tsbuildinfo",
+      "noEmit": true,
+      "module": "ESNext",
+      "target": "ES6",
+      "strict": true,
+      "lib": ["esnext", "dom", "dom.iterable"],
+      "jsx": "react-jsx", // 👈 habilita JSX
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "allowImportingTsExtensions": true,
+      "moduleResolution": "node",
+      "baseUrl": ".",
+      "types": ["node", "vite/client"],
+      "paths": {
+        "@/*": ["./client/src/*"],
+        "@shared/*": ["./shared/*"]
+      }
+    }
+    
+  }
+  

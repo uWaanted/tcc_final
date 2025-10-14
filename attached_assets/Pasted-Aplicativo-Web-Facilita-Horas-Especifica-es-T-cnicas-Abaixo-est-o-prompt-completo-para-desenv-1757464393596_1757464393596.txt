@@ -1,0 +1,237 @@
+Aplicativo Web "Facilita Horas" - Especificações Técnicas
+Abaixo está o prompt completo para desenvolver o aplicativo "Facilita Horas" como uma aplicação web usando JavaScript e TypeScript:
+
+Descrição do Projeto
+Desenvolver uma aplicação web responsiva chamada "Facilita Horas" que permite aos alunos gerenciar horas complementares, visualizar eventos e acompanhar suas atividades. A aplicação deve ter as seguintes telas:
+
+Telas e Funcionalidades
+1. Tela de Login
+Elementos:
+
+Logo "FACILITA HORAS"
+
+Campo de e-mail
+
+Campo de senha
+
+Botão "Entrar"
+
+Link "Esqueceu a senha?"
+
+Link "Criar conta"
+
+Funcionalidades:
+
+Validação de campos obrigatórios
+
+Autenticação de usuário
+
+Redirecionamento para a tela inicial após login bem-sucedido
+
+Navegação para tela de cadastro
+
+2. Tela de Cadastro
+Elementos:
+
+Título "Informe seus dados a seguir:"
+
+Campo de e-mail
+
+Campo de nome de usuário
+
+Campo de senha
+
+Campo de confirmação de senha
+
+Botão "Registrar-se"
+
+Funcionalidades:
+
+Validação de formulário
+
+Verificação de senhas coincidentes
+
+Criação de nova conta de usuário
+
+Redirecionamento para tela de login após cadastro
+
+3. Tela Inicial (Home)
+Elementos:
+
+Cabeçalho com barra de busca
+
+Estatísticas (78.6%, 91%, 9/10)
+
+Menu de navegação:
+
+Eventos
+
+Minhas Atividades
+
+FAQ
+
+Seção de FAQ com categorias
+
+Funcionalidades:
+
+Navegação entre seções
+
+Busca de conteúdo
+
+Exibição de estatísticas do usuário
+
+4. Tela de Eventos
+Elementos:
+
+Cabeçalho com título "Eventos" e barra de busca
+
+Seções:
+
+"Eventos em andamento"
+
+"Mais Visto"
+
+"Próximo"
+
+Cards de eventos com:
+
+Imagem
+
+Título
+
+Localização
+
+Avaliação (ex: 4.8)
+
+Funcionalidades:
+
+Listagem de eventos
+
+Filtragem por categorias
+
+Busca de eventos
+
+Visualização de detalhes do evento
+
+Tecnologias e Estrutura
+Stack Técnica
+Frontend: HTML5, CSS3, TypeScript
+
+Framework: React.js (com hooks e functional components)
+
+Roteamento: React Router
+
+Gerenciamento de Estado: Redux ou Context API
+
+Build Tool: Webpack ou Vite
+
+Estilização: CSS Modules ou Styled Components
+
+Estrutura de Pastas
+text
+src/
+  components/
+    common/
+    login/
+    signup/
+    home/
+    events/
+  services/
+    api.ts
+    auth.ts
+  types/
+    user.ts
+    event.ts
+  utils/
+    validation.ts
+  styles/
+  assets/
+Tipos TypeScript
+typescript
+interface User {
+  id: string;
+  email: string;
+  username: string;
+  createdAt: Date;
+}
+
+interface Event {
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  date: Date;
+  rating: number;
+  imageUrl: string;
+  category: string;
+}
+
+interface LoginData {
+  email: string;
+  password: string;
+}
+
+interface SignupData extends LoginData {
+  username: string;
+  confirmPassword: string;
+}
+Funcionalidades Principais
+Sistema de autenticação com JWT
+
+Gerenciamento de estado de autenticação
+
+Validação de formulários
+
+Chamadas API para:
+
+Autenticação
+
+Busca de eventos
+
+Gestão de atividades do usuário
+
+Design responsivo para mobile e desktop
+
+APIs Mock (para desenvolvimento inicial)
+typescript
+// Mock de serviços
+const authService = {
+  login: (email: string, password: string) => Promise<User>,
+  signup: (userData: SignupData) => Promise<User>,
+  logout: () => Promise<void>,
+};
+
+const eventsService = {
+  getEvents: (filters?: EventFilters) => Promise<Event[]>,
+  getEventById: (id: string) => Promise<Event>,
+  searchEvents: (query: string) => Promise<Event[]>,
+};
+Requisitos de UI/UX
+Design moderno e limpo
+
+Interface intuitiva e fácil de usar
+
+Animações suaves para transições entre telas
+
+Feedback visual para ações do usuário
+
+Mensagens de erro claras e informativas
+
+Implementação Sugerida
+Configurar projeto React com TypeScript
+
+Implementar sistema de roteamento
+
+Criar componentes base (Button, Input, Card)
+
+Implementar sistema de autenticação
+
+Desenvolver telas individualmente
+
+Adicionar responsividade
+
+Implementar funcionalidades específicas
+
+Testar e refinar
+
+Este prompt fornece uma base sólida para desenvolver o aplicativo "Facilita Horas" como uma aplicação web moderna usando JavaScript e TypeScript.
