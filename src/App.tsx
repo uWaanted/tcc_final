@@ -27,6 +27,7 @@ import NotFound from "./pages/not-found";
 
 // Hooks
 import { usePWA } from "./hooks/use-pwa";
+import React from "react";
 
 function Router({ user }: { user: any }) {
   if (!user) {
