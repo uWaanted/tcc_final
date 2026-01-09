@@ -9,12 +9,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocation } from "wouter";
 import { loginSchema, type LoginData } from "@shared/schema";
 import { Eye, EyeOff, BookOpen } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
 
 export default function Login() {
   const [, setLocation] = useLocation();
   const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState("");
 
   const {
     register,
@@ -24,24 +23,28 @@ export default function Login() {
     resolver: zodResolver(loginSchema),
   });
 
-  const loginMutation = useMutation({
-    mutationFn: async (data: LoginData) => {
-      const response = await apiRequest("POST", "/api/auth/login", data);
-      return response.json();
-    },
-    onSuccess: (user) => {
-      // Store user in localStorage for this demo
-      localStorage.setItem("facilita-user", JSON.stringify(user));
-      queryClient.invalidateQueries({ queryKey: ["/api/auth/me"] });
-      setLocation("/");
-    },
-    onError: (error: any) => {
-      console.error("Login failed:", error);
-    },
-  });
-
   const onSubmit = (data: LoginData) => {
-    loginMutation.mutate(data);
+    setError("");
+
+    // 🔹 Recupera usuário salvo
+    const savedUser = localStorage.getItem("facilita-user");
+
+    if (!savedUser) {
+      setError("Email ou senha incorretos. Tente novamente.");
+      return;
+    }
+
+    const user = JSON.parse(savedUser);
+
+    // 🔹 Validação simples
+    if (user.email !== data.email || user.password !== data.password) {
+      setError("Email ou senha incorretos. Tente novamente.");
+      return;
+    }
+
+    // 🔹 Login OK
+    localStorage.setItem("facilita-user", JSON.stringify(user));
+    setLocation("/");
   };
 
   return (
@@ -62,38 +65,26 @@ export default function Login() {
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">E-mail</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="seu@email.com"
-                {...register("email")}
-                data-testid="input-email"
-                className={errors.email ? "border-red-500" : ""}
-              />
+              <Label>E-mail</Label>
+              <Input type="email" {...register("email")} />
               {errors.email && (
                 <p className="text-sm text-red-500">{errors.email.message}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
+              <Label>Senha</Label>
               <div className="relative">
                 <Input
-                  id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
                   {...register("password")}
-                  data-testid="input-password"
-                  className={errors.password ? "border-red-500" : ""}
                 />
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="absolute right-2 top-1/2 transform -translate-y-1/2 h-auto p-1"
+                  className="absolute right-2 top-1/2 -translate-y-1/2"
                   onClick={() => setShowPassword(!showPassword)}
-                  data-testid="button-toggle-password"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </Button>
@@ -105,45 +96,25 @@ export default function Login() {
               )}
             </div>
 
-            {loginMutation.error && (
+            {error && (
               <Alert variant="destructive">
-                <AlertDescription>
-                  Email ou senha incorretos. Tente novamente.
-                </AlertDescription>
+                <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loginMutation.isPending}
-              data-testid="button-login"
-            >
-              {loginMutation.isPending ? "Entrando..." : "Entrar"}
+            <Button type="submit" className="w-full">
+              Entrar
             </Button>
 
-            <div className="text-center space-y-2">
+            <div className="text-center text-sm text-muted-foreground">
+              Não tem uma conta?{" "}
               <Button
                 type="button"
                 variant="link"
-                className="text-sm text-muted-foreground"
-                data-testid="link-forgot-password"
+                onClick={() => setLocation("/signup")}
               >
-                Esqueceu a senha?
+                Criar conta
               </Button>
-
-              <div className="text-sm text-muted-foreground">
-                Não tem uma conta?{" "}
-                <Button
-                  type="button"
-                  variant="link"
-                  className="p-0 text-primary"
-                  onClick={() => setLocation("/signup")}
-                  data-testid="link-create-account"
-                >
-                  Criar conta
-                </Button>
-              </div>
             </div>
           </form>
         </CardContent>

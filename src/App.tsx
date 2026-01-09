@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 // Components
 import PWAHeader from "./components/PWAHeader";
 import BottomNavigation from "./components/BottomNavigation";
-import InstallPrompt from "./components/InstallPrompt";
 import OfflineMessage from "./components/OfflineMessage";
 
 // Pages
@@ -19,9 +18,6 @@ import Events from "./pages/events";
 import Tasks from "./pages/tasks";
 import Profile from "./pages/profile";
 import NotFound from "./pages/not-found";
-
-// Hooks
-import { usePWA } from "./hooks/use-pwa";
 
 function Router({ user }: { user: any }) {
   if (!user) {
@@ -46,23 +42,15 @@ function Router({ user }: { user: any }) {
 
 export default function App() {
   const [location, setLocation] = useLocation();
-  const { isInstallable, installApp } = usePWA();
-
   const [user, setUser] = useState<any>(null);
-  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
 
   // Recupera usuário salvo
   useEffect(() => {
     const savedUser = localStorage.getItem("facilita-user");
-    if (savedUser) setUser(JSON.parse(savedUser));
-  }, []);
-
-  // Mostra prompt PWA apenas quando logado
-  useEffect(() => {
-    if (isInstallable && user) {
-      setShowInstallPrompt(true);
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
     }
-  }, [isInstallable, user]);
+  }, []);
 
   const isAuthPage = location === "/login" || location === "/signup";
 
@@ -79,12 +67,6 @@ export default function App() {
 
           {/* Navegação inferior apenas quando logado */}
           {user && !isAuthPage && <BottomNavigation onNavigate={setLocation} />}
-
-          <InstallPrompt
-            isVisible={showInstallPrompt}
-            onInstall={installApp}
-            onDismiss={() => setShowInstallPrompt(false)}
-          />
 
           <Toaster />
         </div>
