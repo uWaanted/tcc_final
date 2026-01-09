@@ -26,25 +26,23 @@ export default function Login() {
   const onSubmit = (data: LoginData) => {
     setError("");
 
-    // 🔹 Recupera usuário salvo
-    const savedUser = localStorage.getItem("facilita-user");
+    // 🔹 Recupera lista de usuários cadastrados
+    const users = JSON.parse(localStorage.getItem("facilita-users") || "[]");
 
-    if (!savedUser) {
+    // 🔹 Procura usuário pelo email e senha
+    const user = users.find(
+      (u: any) => u.email === data.email && u.password === data.password
+    );
+
+    if (!user) {
       setError("Email ou senha incorretos. Tente novamente.");
       return;
     }
 
-    const user = JSON.parse(savedUser);
-
-    // 🔹 Validação simples
-    if (user.email !== data.email || user.password !== data.password) {
-      setError("Email ou senha incorretos. Tente novamente.");
-      return;
-    }
-
-    // 🔹 Login OK
+    // 🔹 Salva usuário logado (sessão)
     localStorage.setItem("facilita-user", JSON.stringify(user));
-    setLocation("/");
+
+    window.location.href = "/";
   };
 
   return (

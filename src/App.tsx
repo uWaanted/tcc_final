@@ -17,7 +17,6 @@ import Signup from "./pages/signup";
 import Events from "./pages/events";
 import Tasks from "./pages/tasks";
 import Profile from "./pages/profile";
-import NotFound from "./pages/not-found";
 
 function Router({ user }: { user: any }) {
   if (!user) {
@@ -35,7 +34,9 @@ function Router({ user }: { user: any }) {
       <Route path="/events" children={<Events />} />
       <Route path="/tasks" children={<Tasks />} />
       <Route path="/profile" children={<Profile />} />
-      <Route path="/*" children={<NotFound />} />
+
+      {/* 🔒 Proteção extra */}
+      <Route path="/*" children={<Home />} />
     </>
   );
 }
