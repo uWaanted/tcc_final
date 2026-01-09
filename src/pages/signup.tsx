@@ -28,20 +28,24 @@ export default function Signup() {
   const onSubmit = (data: SignupData) => {
     setError("");
 
-    // 🔹 Busca usuários salvos
-    const users = JSON.parse(localStorage.getItem("facilita-users") || "[]");
+    // 🔹 Garante array de usuários
+    const users: any[] = JSON.parse(
+      localStorage.getItem("facilita-users") || "[]"
+    );
+
+    const email = data.email.toLowerCase();
 
     // 🔹 Verifica email duplicado
-    const emailExists = users.some((u: any) => u.email === data.email);
+    const emailExists = users.some((u) => u.email.toLowerCase() === email);
 
     if (emailExists) {
-      setError("Erro ao criar conta. Email já pode estar em uso.");
+      setError("Erro ao criar conta. Email já cadastrado.");
       return;
     }
 
-    // 🔹 Cria novo usuário
+    // 🔹 Cria novo usuário (mesmo formato do login)
     const newUser = {
-      email: data.email,
+      email,
       username: data.username,
       password: data.password,
     };
