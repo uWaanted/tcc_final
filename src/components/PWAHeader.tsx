@@ -1,12 +1,7 @@
-import { QrCode, Smartphone } from "lucide-react";
+import { Smartphone } from "lucide-react";
 import { useNetworkStatus } from "../hooks/use-network-status";
-import { Button } from "../components/ui/button";
 
-interface PWAHeaderProps {
-  onShowQRCode: () => void;
-}
-
-export default function PWAHeader({ onShowQRCode }: PWAHeaderProps) {
+export default function PWAHeader() {
   const isOnline = useNetworkStatus();
 
   return (
@@ -33,14 +28,6 @@ export default function PWAHeader({ onShowQRCode }: PWAHeaderProps) {
             ></i>
             <span>{isOnline ? "Online" : "Offline"}</span>
           </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={onShowQRCode}
-            data-testid="button-qr-code"
-          >
-            <QrCode className="text-muted-foreground" size={20} />
-          </Button>
         </div>
       </div>
     </header>
