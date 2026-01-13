@@ -19,24 +19,24 @@ import Tasks from "./pages/tasks";
 import Profile from "./pages/profile";
 
 function Router({ user }: { user: any }) {
+  // 🔐 Rotas públicas
   if (!user) {
     return (
       <>
-        <Route path="/signup" children={<Signup />} />
-        <Route path="/*" children={<Login />} />
+        <Route path="/signup" component={Signup} />
+        <Route path="/login" component={Login} />
+        <Route path="/" component={Login} />
       </>
     );
   }
 
+  // 🔓 Rotas privadas
   return (
     <>
-      <Route path="/" children={<Home />} />
-      <Route path="/events" children={<Events />} />
-      <Route path="/tasks" children={<Tasks />} />
-      <Route path="/profile" children={<Profile />} />
-
-      {/* 🔒 Proteção extra */}
-      <Route path="/*" children={<Home />} />
+      <Route path="/" component={Home} />
+      <Route path="/events" component={Events} />
+      <Route path="/tasks" component={Tasks} />
+      <Route path="/profile" component={Profile} />
     </>
   );
 }

@@ -1,4 +1,11 @@
-import { ArrowLeft, Mail, Edit, Camera, Settings, LogOut } from "lucide-react";
+import {
+  ArrowLeft,
+  Mail,
+  Camera,
+  LogOut,
+  Clock,
+  CheckCircle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,13 +23,11 @@ export default function Profile() {
     }
   }, []);
 
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   const handleLogout = () => {
     localStorage.removeItem("facilita-user");
-    setLocation("/login");
+    window.location.reload();
   };
 
   const initials = user.username
@@ -33,16 +38,17 @@ export default function Profile() {
     : "U";
 
   return (
-    <main className="px-4 py-6 pb-20">
-      <div className="flex items-center mb-6">
+    <main className="px-4 py-6 pb-20 max-w-5xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="flex items-center">
         <Button variant="ghost" size="sm" onClick={() => setLocation("/")}>
           <ArrowLeft size={20} />
         </Button>
-        <h2 className="text-2xl font-bold ml-2">Perfil</h2>
+        <h1 className="text-2xl font-bold ml-2">Perfil do Aluno</h1>
       </div>
 
       {/* Perfil */}
-      <Card className="mb-6">
+      <Card>
         <CardContent className="p-6">
           <div className="flex flex-col items-center text-center">
             <div className="relative">
@@ -58,36 +64,37 @@ export default function Profile() {
               </Button>
             </div>
 
-            <h3 className="text-xl font-bold mb-1">{user.username}</h3>
-            <p className="text-muted-foreground mb-3">
-              Usuário cadastrado no sistema
-            </p>
-
-            {/* Stats simples */}
-            <div className="flex space-x-6">
-              <div className="text-center">
-                <p className="text-2xl font-bold text-primary">3</p>
-                <p className="text-xs text-muted-foreground">Projetos</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-primary">12</p>
-                <p className="text-xs text-muted-foreground">Tarefas</p>
-              </div>
-              <div className="text-center">
-                <p className="text-2xl font-bold text-primary">2</p>
-                <p className="text-xs text-muted-foreground">Conquistas</p>
-              </div>
-            </div>
+            <h3 className="text-xl font-bold">{user.username}</h3>
+            <p className="text-muted-foreground">Estudante cadastrado</p>
           </div>
         </CardContent>
       </Card>
 
-      {/* Informações */}
-      <Card className="mb-6">
+      {/* Resumo de Horas */}
+      <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Informações da Conta</CardTitle>
+          <CardTitle>Resumo das Horas</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="grid grid-cols-2 gap-4 text-center">
+          <div>
+            <CheckCircle className="mx-auto text-green-600 mb-1" size={22} />
+            <p className="text-xl font-bold">42h</p>
+            <p className="text-xs text-muted-foreground">Concluídas</p>
+          </div>
+          <div>
+            <Clock className="mx-auto text-orange-600 mb-1" size={22} />
+            <p className="text-xl font-bold">18h</p>
+            <p className="text-xs text-muted-foreground">Pendentes</p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Informações da Conta */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Informações da Conta</CardTitle>
+        </CardHeader>
+        <CardContent>
           <div className="flex items-center space-x-3">
             <Mail className="text-muted-foreground" size={20} />
             <div>
@@ -99,28 +106,12 @@ export default function Profile() {
       </Card>
 
       {/* Ações */}
-      <div className="space-y-2">
-        <Card className="cursor-pointer">
-          <CardContent className="p-4 flex items-center space-x-3">
-            <Edit className="text-muted-foreground" size={20} />
-            <span>Editar Perfil</span>
-          </CardContent>
-        </Card>
-
-        <Card className="cursor-pointer">
-          <CardContent className="p-4 flex items-center space-x-3">
-            <Settings className="text-muted-foreground" size={20} />
-            <span>Configurações</span>
-          </CardContent>
-        </Card>
-
-        <Card className="cursor-pointer" onClick={handleLogout}>
-          <CardContent className="p-4 flex items-center space-x-3 text-red-600">
-            <LogOut size={20} />
-            <span>Sair da conta</span>
-          </CardContent>
-        </Card>
-      </div>
+      <Card className="cursor-pointer" onClick={handleLogout}>
+        <CardContent className="p-4 flex items-center space-x-3 text-red-600">
+          <LogOut size={20} />
+          <span>Sair da conta</span>
+        </CardContent>
+      </Card>
     </main>
   );
 }
