@@ -15,11 +15,17 @@ import { useEffect, useState } from "react";
 export default function Profile() {
   const [, setLocation] = useLocation();
   const [user, setUser] = useState<any>(null);
+  const [profileImage, setProfileImage] = useState<string | null>(null);
 
   useEffect(() => {
     const savedUser = localStorage.getItem("facilita-user");
     if (savedUser) {
       setUser(JSON.parse(savedUser));
+    }
+
+    const savedImage = localStorage.getItem("profile-image");
+    if (savedImage) {
+      setProfileImage(savedImage);
     }
   }, []);
 
@@ -28,6 +34,19 @@ export default function Profile() {
   const handleLogout = () => {
     localStorage.removeItem("facilita-user");
     window.location.reload();
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result as string;
+      setProfileImage(base64);
+      localStorage.setItem("profile-image", base64);
+    };
+    reader.readAsDataURL(file);
   };
 
   const initials = user.username
@@ -53,15 +72,28 @@ export default function Profile() {
           <div className="flex flex-col items-center text-center">
             <div className="relative">
               <Avatar className="w-24 h-24 mb-4">
-                <AvatarImage src="" />
-                <AvatarFallback className="text-2xl">{initials}</AvatarFallback>
+                {profileImage ? (
+                  <AvatarImage src={profileImage} />
+                ) : (
+                  <AvatarFallback className="text-2xl">
+                    {initials}
+                  </AvatarFallback>
+                )}
               </Avatar>
-              <Button
-                size="sm"
-                className="absolute -bottom-2 -right-2 rounded-full w-8 h-8 p-0"
-              >
-                <Camera size={14} />
-              </Button>
+
+              <label className="absolute -bottom-2 -right-2 cursor-pointer">
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={handleImageChange}
+                />
+                <Button size="sm" className="rounded-full w-8 h-8 p-0" asChild>
+                  <span>
+                    <Camera size={14} />
+                  </span>
+                </Button>
+              </label>
             </div>
 
             <h3 className="text-xl font-bold">{user.username}</h3>
