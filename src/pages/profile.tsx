@@ -1,3 +1,4 @@
+import { Settings } from "lucide-react";
 import {
   ArrowLeft,
   Mail,
@@ -102,25 +103,6 @@ export default function Profile() {
         </CardContent>
       </Card>
 
-      {/* Resumo de Horas */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Resumo das Horas</CardTitle>
-        </CardHeader>
-        <CardContent className="grid grid-cols-2 gap-4 text-center">
-          <div>
-            <CheckCircle className="mx-auto text-green-600 mb-1" size={22} />
-            <p className="text-xl font-bold">42h</p>
-            <p className="text-xs text-muted-foreground">Concluídas</p>
-          </div>
-          <div>
-            <Clock className="mx-auto text-orange-600 mb-1" size={22} />
-            <p className="text-xl font-bold">18h</p>
-            <p className="text-xs text-muted-foreground">Pendentes</p>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Informações da Conta */}
       <Card>
         <CardHeader>
@@ -134,6 +116,24 @@ export default function Profile() {
               <p className="text-sm text-muted-foreground">{user.email}</p>
             </div>
           </div>
+          <div className="flex items-center space-x-3 mt-4">
+            <div>
+              <p className="font-medium">Telefone</p>
+              <p className="text-sm text-muted-foreground">
+                {user.phone || "Não informado"}
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card
+        className="cursor-pointer"
+        onClick={() => setLocation("/profileSettings")}
+      >
+        <CardContent className="p-4 flex items-center space-x-3">
+          <Settings size={20} />
+          <span>Configurações</span>
         </CardContent>
       </Card>
 

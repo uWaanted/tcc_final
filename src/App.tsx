@@ -17,6 +17,7 @@ import Signup from "./pages/signup";
 import Events from "./pages/events";
 import Tasks from "./pages/tasks";
 import Profile from "./pages/profile";
+import Settings from "./pages/profileSettings";
 
 function Router({ user }: { user: any }) {
   // 🔐 Rotas públicas
@@ -37,6 +38,7 @@ function Router({ user }: { user: any }) {
       <Route path="/events" component={Events} />
       <Route path="/tasks" component={Tasks} />
       <Route path="/profile" component={Profile} />
+      <Route path="/profileSettings" component={Settings} />
     </>
   );
 }
