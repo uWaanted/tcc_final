@@ -1,3 +1,4 @@
+import { mockEvents, Event } from "@/mocks/events";
 import { useState } from "react";
 import { ArrowLeft, Search, Calendar, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -6,14 +7,22 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { useLocation } from "wouter";
 
-// 🔹 Mock simples (pode deixar vazio)
-const events: any[] = [];
+// 🔹 Tradução dos status (camada de apresentação)
+const statusLabels: Record<Event["status"], string> = {
+  ongoing: "Em andamento",
+  upcoming: "Próximo",
+  completed: "Finalizado",
+};
 
 export default function Events() {
   const [, setLocation] = useLocation();
+
+  const [events] = useState<Event[]>(mockEvents);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState<Event["status"] | "">(
+    ""
+  );
 
   const categories = [
     "Tecnologia",
@@ -21,12 +30,6 @@ export default function Events() {
     "Saúde",
     "Educação",
     "Negócios",
-  ];
-
-  const statuses = [
-    { value: "ongoing", label: "Em andamento" },
-    { value: "upcoming", label: "Próximos" },
-    { value: "completed", label: "Finalizados" },
   ];
 
   const filteredEvents = events.filter((event) => {
@@ -73,7 +76,7 @@ export default function Events() {
           variant={selectedCategory === "" ? "default" : "outline"}
           onClick={() => setSelectedCategory("")}
         >
-          Todos
+          Todas
         </Button>
         {categories.map((cat) => (
           <Button
@@ -96,31 +99,34 @@ export default function Events() {
         >
           Todos Status
         </Button>
-        {statuses.map((status) => (
+
+        {Object.entries(statusLabels).map(([value, label]) => (
           <Button
-            key={status.value}
+            key={value}
             size="sm"
-            variant={selectedStatus === status.value ? "default" : "outline"}
-            onClick={() => setSelectedStatus(status.value)}
+            variant={selectedStatus === value ? "default" : "outline"}
+            onClick={() => setSelectedStatus(value as Event["status"])}
           >
-            {status.label}
+            {label}
           </Button>
         ))}
       </div>
 
-      {/* Lista de eventos */}
+      {/* Lista */}
       {filteredEvents.length > 0 ? (
         filteredEvents.map((event) => (
           <Card key={event.id} className="cursor-pointer">
             <CardContent className="p-4 space-y-2">
               <h3 className="font-semibold">{event.title}</h3>
+
               <div className="flex items-center text-sm text-muted-foreground">
                 <MapPin size={14} className="mr-1" />
                 {event.location}
               </div>
+
               <div className="flex items-center gap-2">
                 <Badge variant="outline">{event.category}</Badge>
-                <Badge>{event.status}</Badge>
+                <Badge>{statusLabels[event.status]}</Badge>
               </div>
             </CardContent>
           </Card>
