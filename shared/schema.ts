@@ -9,7 +9,8 @@ import {
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// Users table for Facilita Horas
+// ==================== USERS ====================
+
 export const users = pgTable("users", {
   id: varchar("id")
     .primaryKey()
@@ -21,10 +22,17 @@ export const users = pgTable("users", {
 
   password: text("password").notNull(),
 
+  role: varchar("role", { length: 20 }).notNull(),
+
+  phone: varchar("phone", { length: 20 }),
+
+  profileImage: text("profile_image"),
+
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Events table for Facilita Horas
+// ==================== EVENTS ====================
+
 export const events = pgTable("events", {
   id: varchar("id")
     .primaryKey()
@@ -38,20 +46,47 @@ export const events = pgTable("events", {
 
   date: timestamp("date").notNull(),
 
-  rating: numeric("rating").notNull().default("0"),
+  hours: numeric("hours").notNull(),
 
   imageUrl: text("image_url").notNull(),
 
   category: text("category").notNull(),
 
-  status: text("status").notNull().default("upcoming"), // upcoming, ongoing, completed
+  status: text("status").notNull().default("upcoming"),
+
+  createdBy: varchar("created_by", { length: 255 }).notNull(),
 });
 
-// User schemas
+// ==================== EVENT PARTICIPANTS ====================
+
+export const eventParticipants = pgTable("event_participants", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+
+  userId: varchar("user_id").notNull(),
+
+  eventId: varchar("event_id").notNull(),
+
+  certificateUrl: text("certificate_url"),
+
+  status: text("status").notNull().default("pending"),
+
+  feedback: text("feedback"),
+
+  submittedAt: timestamp("submitted_at"),
+
+  reviewedAt: timestamp("reviewed_at"),
+});
+
+// ==================== USER SCHEMAS ====================
+
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
   username: true,
   password: true,
+  role: true,
+  phone: true,
 });
 
 export const loginSchema = z.object({
@@ -68,6 +103,8 @@ export const signupSchema = z
       .string()
       .min(3, "Nome de usuário deve ter pelo menos 3 caracteres"),
 
+    phone: z.string().optional(),
+
     password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
 
     confirmPassword: z.string().min(6, "Confirmação de senha é obrigatória"),
@@ -81,19 +118,36 @@ export const signupSchema = z
     path: ["confirmPassword"],
   });
 
-// Event schemas
+// ==================== EVENT SCHEMAS ====================
+
 export const insertEventSchema = createInsertSchema(events).pick({
   title: true,
   description: true,
   location: true,
   date: true,
-  rating: true,
+  hours: true,
   imageUrl: true,
   category: true,
   status: true,
+  createdBy: true,
 });
 
-// Types
+// ==================== EVENT PARTICIPANT SCHEMAS ====================
+
+export const insertEventParticipantSchema = createInsertSchema(
+  eventParticipants
+).pick({
+  userId: true,
+  eventId: true,
+  certificateUrl: true,
+  status: true,
+  feedback: true,
+  submittedAt: true,
+  reviewedAt: true,
+});
+
+// ==================== TYPES ====================
+
 export type User = typeof users.$inferSelect;
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -106,7 +160,14 @@ export type Event = typeof events.$inferSelect;
 
 export type InsertEvent = z.infer<typeof insertEventSchema>;
 
-// Event filters and search
+export type EventParticipant = typeof eventParticipants.$inferSelect;
+
+export type InsertEventParticipant = z.infer<
+  typeof insertEventParticipantSchema
+>;
+
+// ==================== FILTERS ====================
+
 export type EventFilters = {
   category?: string;
   status?: "upcoming" | "ongoing" | "completed";

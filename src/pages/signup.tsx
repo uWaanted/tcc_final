@@ -119,7 +119,7 @@ export default function Signup() {
             </div>
 
             <div className="space-y-2">
-              <Label>Nome de usuário</Label>
+              <Label>Nome Completo</Label>
 
               <Input {...register("username")} />
 
