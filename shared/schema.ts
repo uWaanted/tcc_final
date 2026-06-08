@@ -47,7 +47,39 @@ export const events = pgTable("events", {
   status: text("status").notNull().default("upcoming"), // upcoming, ongoing, completed
 });
 
+export const activities = pgTable("activities", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+
+  title: text("title").notNull(),
+
+  category: text("category").notNull(),
+
+  description: text("description"),
+
+  hours: numeric("hours").notNull(),
+
+  activityDate: timestamp("activity_date").notNull(),
+
+  certificate: text("certificate"),
+
+  status: text("status").notNull().default("pending"),
+
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // User schemas
+export const insertActivitySchema = createInsertSchema(activities).pick({
+  title: true,
+  category: true,
+  description: true,
+  hours: true,
+  activityDate: true,
+  certificate: true,
+  status: true,
+});
+
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
   username: true,
@@ -94,6 +126,10 @@ export const insertEventSchema = createInsertSchema(events).pick({
 });
 
 // Types
+export type Activity = typeof activities.$inferSelect;
+
+export type InsertActivity = z.infer<typeof insertActivitySchema>;
+
 export type User = typeof users.$inferSelect;
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
