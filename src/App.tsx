@@ -9,7 +9,6 @@ import { useEffect, useState } from "react";
 import PWAHeader from "./components/PWAHeader";
 import BottomNavigation from "./components/BottomNavigation";
 import OfflineMessage from "./components/OfflineMessage";
-import NewTask from "./components/NewTask";
 
 // Pages
 import Home from "./pages/home";
@@ -19,6 +18,7 @@ import Events from "./pages/events";
 import Tasks from "./pages/tasks";
 import Profile from "./pages/profile";
 import Settings from "./pages/profileSettings";
+import NewTask from "./pages/newTask";
 
 function Router({ user }: { user: any }) {
   // 🔐 Rotas públicas
