@@ -1,62 +1,65 @@
 import { ArrowLeft, Plus, CheckCircle, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 import { useLocation } from "wouter";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { InsertActivity } from "@shared/schema";
 
-interface Task {
+type ActivityTask = InsertActivity & {
   id: string;
-  title: string;
-  description: string;
-  completed: boolean;
-  hours: number;
-  date: string;
-}
+};
 
-const initialTasks: Task[] = [
+const initialTasks: ActivityTask[] = [
   {
     id: "1",
     title: "Participação em palestra",
+    category: "Palestra",
     description: "Palestra sobre inovação tecnológica",
-    completed: true,
-    hours: 4,
-    date: "2024-01-14",
+    hours: "4",
+    activityDate: new Date("2024-01-14"),
+    certificate: "",
+    status: "approved",
   },
   {
     id: "2",
     title: "Curso online",
+    category: "Curso",
     description: "Curso de fundamentos de React",
-    completed: false,
-    hours: 6,
-    date: "2024-01-20",
+    hours: "6",
+    activityDate: new Date("2024-01-20"),
+    certificate: "",
+    status: "pending",
   },
   {
     id: "3",
     title: "Workshop acadêmico",
+    category: "Workshop",
     description: "Workshop sobre pesquisa científica",
-    completed: false,
-    hours: 3,
-    date: "2024-01-25",
+    hours: "3",
+    activityDate: new Date("2024-01-25"),
+    certificate: "",
+    status: "pending",
   },
 ];
 
 export default function Tasks() {
   const [, setLocation] = useLocation();
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [tasks, setTasks] = useState<ActivityTask[]>([]);
 
-  const toggleTask = (id: string) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
+  useEffect(() => {
+    const savedTasks = JSON.parse(
+      localStorage.getItem("facilita-tasks") || "[]"
     );
-  };
 
-  const completedTasks = tasks.filter((t) => t.completed);
-  const pendingTasks = tasks.filter((t) => !t.completed);
+    setTasks([...initialTasks, ...savedTasks]);
+  }, []);
 
-  const totalHours = completedTasks.reduce((sum, t) => sum + t.hours, 0);
+  const approvedTasks = tasks.filter((t) => t.status === "approved");
+
+  const pendingTasks = tasks.filter((t) => t.status === "pending");
+
+  const totalHours = approvedTasks.reduce((sum, t) => sum + Number(t.hours), 0);
 
   return (
     <main className="px-4 py-6 pb-20 max-w-5xl mx-auto space-y-6">
@@ -81,8 +84,8 @@ export default function Tasks() {
         <Card>
           <CardContent className="p-4 text-center">
             <CheckCircle className="mx-auto text-green-600 mb-1" />
-            <p className="text-xl font-bold">{completedTasks.length}</p>
-            <p className="text-xs text-muted-foreground">Concluídas</p>
+            <p className="text-xl font-bold">{approvedTasks.length}</p>
+            <p className="text-xs text-muted-foreground">Aprovadas</p>
           </CardContent>
         </Card>
 
@@ -105,27 +108,33 @@ export default function Tasks() {
       {/* Lista de Atividades */}
       <div className="space-y-4">
         {tasks.map((task) => (
-          <Card key={task.id} className={task.completed ? "opacity-60" : ""}>
-            <CardContent className="p-4 flex gap-3">
-              <Checkbox
-                checked={task.completed}
-                onCheckedChange={() => toggleTask(task.id)}
-              />
-              <div className="flex-1">
-                <h3
-                  className={`font-medium ${
-                    task.completed ? "line-through" : ""
-                  }`}
-                >
-                  {task.title}
-                </h3>
-                <p className="text-sm text-muted-foreground">
-                  {task.description}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  {task.hours}h •{" "}
-                  {new Date(task.date).toLocaleDateString("pt-BR")}
-                </p>
+          <Card key={task.id}>
+            <CardContent className="p-4">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <h3 className="font-medium">{task.title}</h3>
+
+                  <p className="text-sm text-muted-foreground">
+                    {task.description}
+                  </p>
+
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {task.hours}h •{" "}
+                    {new Date(task.activityDate).toLocaleDateString("pt-BR")}
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <Badge variant="outline">{task.category}</Badge>
+
+                  <Badge>
+                    {task.status === "approved"
+                      ? "Aprovada"
+                      : task.status === "rejected"
+                      ? "Rejeitada"
+                      : "Em análise"}
+                  </Badge>
+                </div>
               </div>
             </CardContent>
           </Card>

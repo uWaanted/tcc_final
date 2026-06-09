@@ -25,7 +25,8 @@ export default function NewTask() {
       return;
     }
 
-    const task: InsertActivity = {
+    const task: InsertActivity & { id: string } = {
+      id: Date.now().toString(),
       title,
       category,
       description,
