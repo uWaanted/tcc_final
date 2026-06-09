@@ -66,9 +66,11 @@ export default function Tasks() {
           <Button variant="ghost" size="sm" onClick={() => setLocation("/")}>
             <ArrowLeft size={20} />
           </Button>
-          <h1 className="text-2xl font-bold ml-2">Atividades</h1>
+
+          <h1 className="text-2xl font-bold ml-2">Minhas Atividades</h1>
         </div>
-        <Button size="sm">
+
+        <Button size="sm" onClick={() => setLocation("/new-task")}>
           <Plus size={16} className="mr-1" />
           Adicionar
         </Button>

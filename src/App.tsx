@@ -5,10 +5,11 @@ import { TooltipProvider } from "./components/ui/tooltip";
 import { Toaster } from "./components/ui/toaster";
 import { useEffect, useState } from "react";
 
-// Components
+// Componentes usados
 import PWAHeader from "./components/PWAHeader";
 import BottomNavigation from "./components/BottomNavigation";
 import OfflineMessage from "./components/OfflineMessage";
+import NewTask from "./components/NewTask";
 
 // Pages
 import Home from "./pages/home";
@@ -39,6 +40,7 @@ function Router({ user }: { user: any }) {
       <Route path="/tasks" component={Tasks} />
       <Route path="/profile" component={Profile} />
       <Route path="/profileSettings" component={Settings} />
+      <Route path="/new-task" component={NewTask} />
     </>
   );
 }

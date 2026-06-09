@@ -79,7 +79,6 @@ export const eventParticipants = pgTable("event_participants", {
   reviewedAt: timestamp("reviewed_at"),
 });
 
-// ==================== USER SCHEMAS ====================
 
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
@@ -132,21 +131,7 @@ export const insertEventSchema = createInsertSchema(events).pick({
   createdBy: true,
 });
 
-// ==================== EVENT PARTICIPANT SCHEMAS ====================
 
-export const insertEventParticipantSchema = createInsertSchema(
-  eventParticipants
-).pick({
-  userId: true,
-  eventId: true,
-  certificateUrl: true,
-  status: true,
-  feedback: true,
-  submittedAt: true,
-  reviewedAt: true,
-});
-
-// ==================== TYPES ====================
 
 export type User = typeof users.$inferSelect;
 
