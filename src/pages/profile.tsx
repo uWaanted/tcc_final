@@ -1,30 +1,28 @@
-import { Settings } from "lucide-react";
-import {
-  ArrowLeft,
-  Mail,
-  Camera,
-  LogOut,
-  Clock,
-  CheckCircle,
-} from "lucide-react";
+import { ArrowLeft, Camera, LogOut, Settings } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 import { useLocation } from "wouter";
 import { useEffect, useState } from "react";
 
 export default function Profile() {
   const [, setLocation] = useLocation();
+
   const [user, setUser] = useState<any>(null);
   const [profileImage, setProfileImage] = useState<string | null>(null);
 
   useEffect(() => {
     const savedUser = localStorage.getItem("facilita-user");
+
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }
 
     const savedImage = localStorage.getItem("profile-image");
+
     if (savedImage) {
       setProfileImage(savedImage);
     }
@@ -39,14 +37,18 @@ export default function Profile() {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+
     if (!file) return;
 
     const reader = new FileReader();
+
     reader.onloadend = () => {
       const base64 = reader.result as string;
+
       setProfileImage(base64);
       localStorage.setItem("profile-image", base64);
     };
+
     reader.readAsDataURL(file);
   };
 
@@ -64,6 +66,7 @@ export default function Profile() {
         <Button variant="ghost" size="sm" onClick={() => setLocation("/")}>
           <ArrowLeft size={20} />
         </Button>
+
         <h1 className="text-2xl font-bold ml-2">Perfil do Aluno</h1>
       </div>
 
@@ -89,6 +92,7 @@ export default function Profile() {
                   hidden
                   onChange={handleImageChange}
                 />
+
                 <Button size="sm" className="rounded-full w-8 h-8 p-0" asChild>
                   <span>
                     <Camera size={14} />
@@ -98,7 +102,14 @@ export default function Profile() {
             </div>
 
             <h3 className="text-xl font-bold">{user.username}</h3>
-            <p className="text-muted-foreground">Estudante cadastrado</p>
+
+            <p className="text-muted-foreground">
+              {user.course || "Curso não informado"}
+            </p>
+
+            <p className="text-sm text-muted-foreground">
+              {user.institution || "Instituição não informada"}
+            </p>
           </div>
         </CardContent>
       </Card>
@@ -108,25 +119,51 @@ export default function Profile() {
         <CardHeader>
           <CardTitle>Informações da Conta</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="flex items-center space-x-3">
-            <Mail className="text-muted-foreground" size={20} />
-            <div>
-              <p className="font-medium">Email</p>
-              <p className="text-sm text-muted-foreground">{user.email}</p>
-            </div>
+
+        <CardContent className="space-y-4">
+          <div>
+            <p className="font-medium">Nome</p>
+            <p className="text-sm text-muted-foreground">{user.username}</p>
           </div>
-          <div className="flex items-center space-x-3 mt-4">
-            <div>
-              <p className="font-medium">Telefone</p>
-              <p className="text-sm text-muted-foreground">
-                {user.phone || "Não informado"}
-              </p>
-            </div>
+
+          <div>
+            <p className="font-medium">Email</p>
+            <p className="text-sm text-muted-foreground">{user.email}</p>
+          </div>
+
+          <div>
+            <p className="font-medium">Telefone</p>
+            <p className="text-sm text-muted-foreground">
+              {user.phone || "Não informado"}
+            </p>
           </div>
         </CardContent>
       </Card>
 
+      {/* Informações Acadêmicas */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Informações Acadêmicas</CardTitle>
+        </CardHeader>
+
+        <CardContent className="space-y-4">
+          <div>
+            <p className="font-medium">Curso</p>
+            <p className="text-sm text-muted-foreground">
+              {user.course || "Não informado"}
+            </p>
+          </div>
+
+          <div>
+            <p className="font-medium">Instituição</p>
+            <p className="text-sm text-muted-foreground">
+              {user.institution || "Não informada"}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Configurações */}
       <Card
         className="cursor-pointer"
         onClick={() => setLocation("/profileSettings")}
@@ -137,7 +174,7 @@ export default function Profile() {
         </CardContent>
       </Card>
 
-      {/* Ações */}
+      {/* Logout */}
       <Card className="cursor-pointer" onClick={handleLogout}>
         <CardContent className="p-4 flex items-center space-x-3 text-red-600">
           <LogOut size={20} />
