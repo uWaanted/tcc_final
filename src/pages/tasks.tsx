@@ -1,4 +1,11 @@
-import { ArrowLeft, Plus, CheckCircle, Clock } from "lucide-react";
+import {
+  ArrowLeft,
+  Plus,
+  CheckCircle,
+  Clock,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +25,7 @@ const initialTasks: ActivityTask[] = [
     description: "Palestra sobre inovação tecnológica",
     hours: "4",
     activityDate: new Date("2024-01-14"),
-    certificate: "",
+    certificate: "palestra.pdf",
     status: "approved",
   },
   {
@@ -28,7 +35,7 @@ const initialTasks: ActivityTask[] = [
     description: "Curso de fundamentos de React",
     hours: "6",
     activityDate: new Date("2024-01-20"),
-    certificate: "",
+    certificate: "react.pdf",
     status: "pending",
   },
   {
@@ -38,7 +45,7 @@ const initialTasks: ActivityTask[] = [
     description: "Workshop sobre pesquisa científica",
     hours: "3",
     activityDate: new Date("2024-01-25"),
-    certificate: "",
+    certificate: "workshop_academico.pdf",
     status: "pending",
   },
 ];
@@ -52,8 +59,27 @@ export default function Tasks() {
       localStorage.getItem("facilita-tasks") || "[]"
     );
 
-    setTasks([...initialTasks, ...savedTasks]);
+    if (savedTasks.length === 0) {
+      localStorage.setItem("facilita-tasks", JSON.stringify(initialTasks));
+
+      setTasks(initialTasks);
+    } else {
+      setTasks(savedTasks);
+    }
   }, []);
+
+  const deleteTask = (id: string) => {
+    const updatedTasks = tasks.filter((task) => task.id !== id);
+
+    setTasks(updatedTasks);
+
+    localStorage.setItem(
+      "facilita-tasks",
+      JSON.stringify(
+        updatedTasks.filter((task) => !["1", "2", "3"].includes(task.id))
+      )
+    );
+  };
 
   const approvedTasks = tasks.filter((t) => t.status === "approved");
 
@@ -122,6 +148,31 @@ export default function Tasks() {
                     {task.hours}h •{" "}
                     {new Date(task.activityDate).toLocaleDateString("pt-BR")}
                   </p>
+
+                  {task.certificate && (
+                    <p className="text-xs text-blue-600 mt-1">
+                      📎 {task.certificate}
+                    </p>
+                  )}
+                  <div className="flex gap-2 mt-3">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setLocation(`/edit-task/${task.id}`)}
+                    >
+                      <Pencil size={14} className="mr-1" />
+                      Editar
+                    </Button>
+
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => deleteTask(task.id)}
+                    >
+                      <Trash2 size={14} className="mr-1" />
+                      Excluir
+                    </Button>
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-2">
