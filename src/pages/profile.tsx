@@ -1,3 +1,4 @@
+import avatarPadrao from "@/pages/avatar.png";
 import { ArrowLeft, Camera, LogOut, Settings } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -75,15 +76,11 @@ export default function Profile() {
         <CardContent className="p-6">
           <div className="flex flex-col items-center text-center">
             <div className="relative">
-              <Avatar className="w-24 h-24 mb-4">
-                {profileImage ? (
-                  <AvatarImage src={profileImage} />
-                ) : (
-                  <AvatarFallback className="text-2xl">
-                    {initials}
-                  </AvatarFallback>
-                )}
-              </Avatar>
+              <img
+                src={profileImage || avatarPadrao}
+                alt="Foto de perfil"
+                className="w-24 h-24 rounded-full object-cover mb-4"
+              />
 
               <label className="absolute -bottom-2 -right-2 cursor-pointer">
                 <input
@@ -107,9 +104,7 @@ export default function Profile() {
               {user.course || "Curso não informado"}
             </p>
 
-            <p className="text-sm text-muted-foreground">
-              {user.institution || "Instituição não informada"}
-            </p>
+            <p className="text-sm text-muted-foreground">UTFPR</p>
           </div>
         </CardContent>
       </Card>
@@ -156,9 +151,7 @@ export default function Profile() {
 
           <div>
             <p className="font-medium">Instituição</p>
-            <p className="text-sm text-muted-foreground">
-              {user.institution || "Não informada"}
-            </p>
+            <p className="text-sm text-muted-foreground">UTFPR</p>
           </div>
         </CardContent>
       </Card>
