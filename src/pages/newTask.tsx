@@ -8,32 +8,45 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { InsertActivity } from "@shared/schema";
+import {
+  ActivityGroup,
+  GROUPS,
+  getCategoriesByGroup,
+} from "@/mocks/activityCategories";
 
 export default function NewTask() {
   const [, setLocation] = useLocation();
 
-  const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState<ActivityGroup>("group1");
+
   const [description, setDescription] = useState("");
   const [hours, setHours] = useState("");
   const [date, setDate] = useState("");
   const [certificate, setCertificate] = useState("");
 
+  const categories = getCategoriesByGroup(selectedGroup);
+  const selectedActivity = categories.find(
+    (activity) => activity.name === category
+  );
+
   const handleSave = () => {
-    if (!title || !category || !hours || !date) {
+    if (!category || !hours || !date) {
       alert("Preencha todos os campos obrigatórios.");
       return;
     }
 
     const task: InsertActivity & { id: string } = {
       id: Date.now().toString(),
-      title,
+      group: selectedGroup,
+      title: category,
       category,
       description,
       hours,
+      points: selectedActivity?.points?.toString() ?? "0",
       activityDate: new Date(date),
       certificate,
-      status: "pending",
+      status: "registered",
     };
 
     const existingTasks = JSON.parse(
@@ -67,42 +80,89 @@ export default function NewTask() {
 
       <Card>
         <CardContent className="p-6 space-y-5">
-          <div className="space-y-2">
-            <Label>Título *</Label>
+          <div className="space-y-3">
+            <Label>Grupo *</Label>
 
-            <Input
-              placeholder="Ex: Participação em palestra"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </div>
+            <div className="grid grid-cols-3 gap-2">
+              <Button
+                type="button"
+                variant={selectedGroup === "group1" ? "default" : "outline"}
+                onClick={() => {
+                  setSelectedGroup("group1");
+                  setCategory("");
+                }}
+              >
+                Grupo 1
+              </Button>
 
-          <div className="space-y-2">
-            <Label>Categoria *</Label>
+              <Button
+                type="button"
+                variant={selectedGroup === "group2" ? "default" : "outline"}
+                onClick={() => {
+                  setSelectedGroup("group2");
+                  setCategory("");
+                }}
+              >
+                Grupo 2
+              </Button>
 
-            <select
-              className="w-full h-10 border rounded-md px-3 bg-background"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
-              <option value="">Selecione uma categoria</option>
+              <Button
+                type="button"
+                variant={selectedGroup === "group3" ? "default" : "outline"}
+                onClick={() => {
+                  setSelectedGroup("group3");
+                  setCategory("");
+                }}
+              >
+                Grupo 3
+              </Button>
+            </div>
 
-              <option value="Evento">Evento</option>
+            <Card>
+              <CardContent className="p-4">
+                <h3 className="font-medium">{GROUPS[selectedGroup].title}</h3>
 
-              <option value="Curso">Curso</option>
+                <div className="mt-2 text-sm text-muted-foreground">
+                  <p>Mínimo: {GROUPS[selectedGroup].minPoints} pontos</p>
 
-              <option value="Palestra">Palestra</option>
+                  <p>Máximo: {GROUPS[selectedGroup].maxPoints} pontos</p>
+                </div>
+              </CardContent>
+            </Card>
 
-              <option value="Workshop">Workshop</option>
+            <div className="space-y-2">
+              <Label>Tipo de Atividade *</Label>
 
-              <option value="Projeto de Extensão">Projeto de Extensão</option>
+              <select
+                className="w-full h-10 border rounded-md px-3 bg-background"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                <option value="">Selecione uma atividade</option>
 
-              <option value="Monitoria">Monitoria</option>
+                {categories.map((activity) => (
+                  <option key={activity.id} value={activity.name}>
+                    {activity.name}
+                  </option>
+                ))}
+              </select>
+              {selectedActivity && (
+                <Card>
+                  <CardContent className="p-4">
+                    <p className="font-medium">Pontuação da atividade</p>
 
-              <option value="Pesquisa Científica">Pesquisa Científica</option>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {selectedActivity.points} ponto(s) por{" "}
+                      {selectedActivity.unit}
+                    </p>
 
-              <option value="Outro">Outro</option>
-            </select>
+                    <p className="text-sm text-muted-foreground">
+                      Limite máximo: {selectedActivity.maxPoints} pontos
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
           </div>
 
           <div className="space-y-2">
