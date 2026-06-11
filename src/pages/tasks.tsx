@@ -12,47 +12,64 @@ import { Badge } from "@/components/ui/badge";
 import { useLocation } from "wouter";
 import { useEffect, useState } from "react";
 import type { InsertActivity } from "@shared/schema";
+import { ActivityGroup, GROUPS } from "@/mocks/activityCategories";
 
 type ActivityTask = InsertActivity & {
   id: string;
+  group: ActivityGroup;
 };
 
 const initialTasks: ActivityTask[] = [
   {
     id: "1",
-    title: "Participação em palestra",
-    category: "Palestra",
+    group: "group1",
+    title: "Participação em palestras, seminários e eventos sociais",
+    category: "Participação em palestras, seminários e eventos sociais",
     description: "Palestra sobre inovação tecnológica",
     hours: "4",
+    points: "2",
+    maxPoints: "10",
+    unit: "evento",
     activityDate: new Date("2024-01-14"),
     certificate: "palestra.pdf",
-    status: "approved",
+    status: "registered",
   },
+
   {
     id: "2",
-    title: "Curso online",
-    category: "Curso",
-    description: "Curso de fundamentos de React",
+    group: "group2",
+    title: "Participação em projetos de extensão não remunerados",
+    category: "Participação em projetos de extensão não remunerados",
+    description: "Projeto de extensão voltado à comunidade",
     hours: "6",
+    points: "4",
+    maxPoints: "20",
+    unit: "projeto",
     activityDate: new Date("2024-01-20"),
-    certificate: "react.pdf",
-    status: "pending",
+    certificate: "extensao.pdf",
+    status: "registered",
   },
+
   {
     id: "3",
-    title: "Workshop acadêmico",
-    category: "Workshop",
-    description: "Workshop sobre pesquisa científica",
+    group: "group3",
+    title: "Cursos de fundamento técnico, científico ou de gestão",
+    category: "Cursos de fundamento técnico, científico ou de gestão",
+    description: "Curso de fundamentos de React",
     hours: "3",
+    points: "3",
+    maxPoints: "30",
+    unit: "curso",
     activityDate: new Date("2024-01-25"),
-    certificate: "workshop_academico.pdf",
-    status: "pending",
+    certificate: "react.pdf",
+    status: "registered",
   },
 ];
 
 export default function Tasks() {
   const [, setLocation] = useLocation();
   const [tasks, setTasks] = useState<ActivityTask[]>([]);
+  const [selectedGroup, setSelectedGroup] = useState<ActivityGroup>("group1");
 
   useEffect(() => {
     const savedTasks = JSON.parse(
@@ -81,11 +98,21 @@ export default function Tasks() {
     );
   };
 
-  const approvedTasks = tasks.filter((t) => t.status === "approved");
+  const filteredTasks = tasks.filter((task) => task.group === selectedGroup);
 
-  const pendingTasks = tasks.filter((t) => t.status === "pending");
+  const approvedTasks = filteredTasks.filter((t) => t.status === "approved");
 
-  const totalHours = approvedTasks.reduce((sum, t) => sum + Number(t.hours), 0);
+  const pendingTasks = filteredTasks.filter((t) => t.status === "pending");
+
+  const totalPoints = approvedTasks.reduce(
+    (sum, t) => sum + Number(t.points),
+    0
+  );
+
+  const progressPercentage =
+    GROUPS[selectedGroup].minPoints > 0
+      ? Math.min((totalPoints / GROUPS[selectedGroup].minPoints) * 100, 100)
+      : 0;
 
   return (
     <main className="px-4 py-6 pb-20 max-w-5xl mx-auto space-y-6">
@@ -105,7 +132,63 @@ export default function Tasks() {
         </Button>
       </div>
 
+      {/* Grupos de Atividades */}
+      <div className="grid grid-cols-3 gap-2">
+        <Button
+          variant={selectedGroup === "group1" ? "default" : "outline"}
+          onClick={() => setSelectedGroup("group1")}
+        >
+          Grupo 1
+        </Button>
+
+        <Button
+          variant={selectedGroup === "group2" ? "default" : "outline"}
+          onClick={() => setSelectedGroup("group2")}
+        >
+          Grupo 2
+        </Button>
+
+        <Button
+          variant={selectedGroup === "group3" ? "default" : "outline"}
+          onClick={() => setSelectedGroup("group3")}
+        >
+          Grupo 3
+        </Button>
+      </div>
+
       {/* Mini Dashboard */}
+      <Card>
+        <CardContent className="p-4">
+          <h3 className="font-semibold">{GROUPS[selectedGroup].title}</h3>
+
+          <p>Mínimo: {GROUPS[selectedGroup].minPoints}</p>
+
+          <p>Máximo: {GROUPS[selectedGroup].maxPoints}</p>
+
+          <p className="mt-3">
+            Obtidos: <strong>{totalPoints}</strong> pontos
+          </p>
+
+          <div className="w-full bg-muted rounded-full h-3 mt-3">
+            <div
+              className="bg-primary h-3 rounded-full transition-all"
+              style={{
+                width: `${progressPercentage}%`,
+              }}
+            />
+          </div>
+
+          <p className="text-xs text-muted-foreground mt-1">
+            {progressPercentage.toFixed(0)}% do mínimo exigido
+          </p>
+
+          {totalPoints >= GROUPS[selectedGroup].minPoints && (
+            <p className="text-green-600 font-medium mt-2">
+              ✓ Pontuação mínima atingida
+            </p>
+          )}
+        </CardContent>
+      </Card>
       <div className="grid grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
@@ -125,36 +208,45 @@ export default function Tasks() {
 
         <Card>
           <CardContent className="p-4 text-center">
-            <p className="text-xl font-bold">{totalHours}h</p>
-            <p className="text-xs text-muted-foreground">Horas validadas</p>
+            <p className="text-xl font-bold">{totalPoints}</p>
+
+            <p className="text-xs text-muted-foreground">Pontos obtidos</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Lista de Atividades */}
       <div className="space-y-4">
-        {tasks.map((task) => (
+        {filteredTasks.map((task) => (
           <Card key={task.id}>
             <CardContent className="p-4">
-              <div className="flex items-start justify-between">
+              <div className="flex justify-between gap-4">
                 <div className="flex-1">
-                  <h3 className="font-medium">{task.title}</h3>
+                  <h3 className="font-semibold text-base">{task.title}</h3>
 
-                  <p className="text-sm text-muted-foreground">
-                    {task.description}
-                  </p>
+                  {task.description && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {task.description}
+                    </p>
+                  )}
 
-                  <p className="text-xs text-muted-foreground mt-2">
-                    {task.hours}h •{" "}
-                    {new Date(task.activityDate).toLocaleDateString("pt-BR")}
-                  </p>
+                  <div className="flex flex-wrap gap-3 mt-3 text-xs text-muted-foreground">
+                    <span>{task.points} pontos</span>
+
+                    {task.hours && <span>{task.hours}h</span>}
+
+                    <span>
+                      {new Date(task.activityDate).toLocaleDateString("pt-BR")}
+                    </span>
+                  </div>
 
                   {task.certificate && (
-                    <p className="text-xs text-blue-600 mt-1">
+                    <p className="text-xs text-blue-600 mt-2">
                       📎 {task.certificate}
                     </p>
                   )}
-                  <div className="flex gap-2 mt-3">
+
+                  <div className="flex gap-2 mt-4">
                     <Button
                       size="sm"
                       variant="outline"
@@ -175,17 +267,9 @@ export default function Tasks() {
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-2">
-                  <Badge variant="outline">{task.category}</Badge>
-
-                  <Badge>
-                    {task.status === "approved"
-                      ? "Aprovada"
-                      : task.status === "rejected"
-                      ? "Rejeitada"
-                      : "Em análise"}
-                  </Badge>
-                </div>
+                <Badge variant="secondary" className="h-fit whitespace-nowrap">
+                  {task.points} pts
+                </Badge>
               </div>
             </CardContent>
           </Card>
@@ -193,10 +277,10 @@ export default function Tasks() {
       </div>
 
       {/* Estado vazio */}
-      {tasks.length === 0 && (
+      {filteredTasks.length === 0 && (
         <div className="text-center py-12">
           <p className="text-muted-foreground">Nenhuma atividade cadastrada</p>
-          <Button className="mt-4">
+          <Button className="mt-4" onClick={() => setLocation("/new-task")}>
             <Plus size={16} className="mr-1" />
             Adicionar atividade
           </Button>

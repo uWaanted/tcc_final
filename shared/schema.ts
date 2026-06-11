@@ -54,17 +54,25 @@ export const activities = pgTable("activities", {
 
   title: text("title").notNull(),
 
+  group: text("group").notNull(),
+
   category: text("category").notNull(),
 
   description: text("description"),
 
-  hours: numeric("hours").notNull(),
+  hours: numeric("hours"),
+
+  points: numeric("points").notNull(),
+
+  maxPoints: numeric("max_points"),
+
+  unit: text("unit"),
 
   activityDate: timestamp("activity_date").notNull(),
 
   certificate: text("certificate"),
 
-  status: text("status").notNull().default("pending"),
+  status: text("status").notNull().default("registered"),
 
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -72,9 +80,13 @@ export const activities = pgTable("activities", {
 // User schemas
 export const insertActivitySchema = createInsertSchema(activities).pick({
   title: true,
+  group: true,
   category: true,
   description: true,
   hours: true,
+  points: true,
+  maxPoints: true,
+  unit: true,
   activityDate: true,
   certificate: true,
   status: true,
