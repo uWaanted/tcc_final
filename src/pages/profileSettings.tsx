@@ -1,3 +1,13 @@
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import { COURSES } from "@/mocks/academicOptions";
+
 import { ArrowLeft, Save } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -15,7 +25,6 @@ export default function ProfileSettings() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [course, setCourse] = useState("");
-  const [institution, setInstitution] = useState("");
 
   useEffect(() => {
     const savedUser = localStorage.getItem("facilita-user");
@@ -27,7 +36,6 @@ export default function ProfileSettings() {
       setEmail(user.email || "");
       setPhone(user.phone || "");
       setCourse(user.course || "");
-      setInstitution(user.institution || "");
     }
   }, []);
 
@@ -44,7 +52,7 @@ export default function ProfileSettings() {
       email,
       phone,
       course,
-      institution,
+      institution: "UTFPR",
     };
 
     localStorage.setItem("facilita-user", JSON.stringify(updatedUser));
@@ -107,21 +115,19 @@ export default function ProfileSettings() {
           <div>
             <label className="text-sm font-medium">Curso</label>
 
-            <Input
-              value={course}
-              onChange={(e) => setCourse(e.target.value)}
-              placeholder="Ex: Análise e Desenvolvimento de Sistemas"
-            />
-          </div>
+            <Select value={course} onValueChange={setCourse}>
+              <SelectTrigger>
+                <SelectValue placeholder="Selecione seu curso" />
+              </SelectTrigger>
 
-          <div>
-            <label className="text-sm font-medium">Instituição</label>
-
-            <Input
-              value={institution}
-              onChange={(e) => setInstitution(e.target.value)}
-              placeholder="Ex: UNISEP"
-            />
+              <SelectContent>
+                {COURSES.map((courseOption) => (
+                  <SelectItem key={courseOption} value={courseOption}>
+                    {courseOption}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <Button className="w-full" onClick={handleSave}>
