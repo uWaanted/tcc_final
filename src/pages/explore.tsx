@@ -1,4 +1,13 @@
 import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
+
+import {
   ArrowLeft,
   HelpCircle,
   FileText,
@@ -12,44 +21,98 @@ import { useLocation } from "wouter";
 const faqCategories = [
   {
     id: "1",
-    title: "Como registrar horas?",
-    description: "Aprenda como cadastrar atividades complementares no sistema",
+    title: "Cadastro de Atividades",
+    description: "Como registrar atividades complementares",
     icon: FileText,
   },
+
   {
     id: "2",
-    title: "Atividades válidas",
-    description: "Veja quais tipos de atividades são aceitas pelo curso",
+    title: "Pontuação",
+    description: "Regras de cálculo e limites de pontos",
     icon: CheckCircle,
   },
+
   {
     id: "3",
-    title: "Prazos e limites",
-    description: "Entenda os prazos para envio e validação das horas",
+    title: "Validação",
+    description: "Entrega de documentos e análise final",
     icon: Clock,
   },
 ];
 
 const faqItems = [
   {
-    question: "Como registrar uma atividade?",
+    question: "Como cadastrar uma atividade complementar?",
     answer:
-      "Acesse a aba Atividades e clique em Adicionar para cadastrar uma nova atividade.",
+      "Acesse 'Minhas Atividades', clique em 'Adicionar' e selecione o grupo e a atividade correspondente. Informe a quantidade realizada e anexe o comprovante.",
+  },
+
+  {
+    question: "Como a pontuação é calculada?",
+    answer:
+      "Cada atividade possui uma quantidade de pontos definida pelo regulamento do curso. O sistema calcula automaticamente a pontuação com base na quantidade informada.",
+  },
+
+  {
+    question: "Posso ultrapassar o limite de pontos de uma atividade?",
+    answer:
+      "Não. O sistema bloqueia cadastros que excedam a pontuação máxima permitida para cada atividade.",
+  },
+
+  {
+    question: "Quando minhas horas são validadas?",
+    answer:
+      "O cadastro serve para acompanhamento durante o curso. A validação oficial ocorre no momento da entrega da documentação para análise da coordenação.",
+  },
+
+  {
+    question: "Preciso anexar comprovantes?",
+    answer:
+      "Sim. Recomenda-se anexar certificados, declarações ou comprovantes para facilitar a conferência das atividades realizadas.",
+  },
+
+  {
+    question: "Como acompanhar meu progresso?",
+    answer:
+      "Na tela 'Minhas Atividades' existe uma barra de progresso que mostra a quantidade de pontos obtidos em relação ao mínimo exigido para cada grupo.",
   },
   {
-    question: "Quantas horas complementares são necessárias?",
+    question: "Qual a diferença entre pontos mínimos e máximos?",
     answer:
-      "Cada curso define uma carga horária específica. Consulte o regulamento do seu curso.",
+      "Cada grupo possui uma pontuação mínima obrigatória para conclusão das horas complementares e uma pontuação máxima considerada para contabilização.",
   },
   {
-    question: "Quais documentos são aceitos?",
+    question: "Posso cadastrar a mesma atividade mais de uma vez?",
     answer:
-      "Certificados, declarações e comprovantes oficiais emitidos pela instituição organizadora.",
+      "Sim, desde que o limite máximo de pontuação definido para a atividade não seja ultrapassado.",
+  },
+  {
+    question: "O que acontece quando atinjo o limite de uma atividade?",
+    answer:
+      "O sistema bloqueia novos cadastros para aquela atividade quando o limite máximo de pontos permitido já foi atingido.",
+  },
+  {
+    question: "O que são os grupos de atividades?",
+    answer:
+      "As atividades complementares são divididas em grupos definidos pelo regulamento do curso. Cada grupo possui pontuação mínima e máxima que deve ser respeitada para integralização das horas complementares.",
   },
 ];
 
 export default function Explore() {
   const [, setLocation] = useLocation();
+
+  const [search, setSearch] = useState("");
+
+  const filteredFaq = faqItems.filter((item) =>
+    item.question.toLowerCase().includes(search.toLowerCase())
+  );
+
+  <Input
+    placeholder="Pesquisar dúvida..."
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+  />;
 
   return (
     <main className="px-4 py-6 pb-20 max-w-5xl mx-auto space-y-6">
@@ -84,24 +147,35 @@ export default function Explore() {
         </div>
       </section>
 
+      <Card>
+        <CardContent className="p-4">
+          <h3 className="font-semibold">Não encontrou sua resposta?</h3>
+
+          <p className="text-sm text-muted-foreground">
+            Entre em contato com a coordenação do curso.
+          </p>
+        </CardContent>
+      </Card>
+      <div className="space-y-2">
+        <Input
+          placeholder="Pesquisar dúvida..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+
       {/* FAQ */}
       <section>
         <h2 className="text-lg font-semibold mb-4">Perguntas Frequentes</h2>
-        <div className="space-y-3">
-          {faqItems.map((item, index) => (
-            <Card key={index}>
-              <CardHeader>
-                <CardTitle className="text-base flex items-center gap-2">
-                  <HelpCircle size={18} />
-                  {item.question}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">{item.answer}</p>
-              </CardContent>
-            </Card>
+        <Accordion type="single" collapsible>
+          {filteredFaq.map((item, index) => (
+            <AccordionItem key={index} value={`item-${index}`}>
+              <AccordionTrigger>{item.question}</AccordionTrigger>
+
+              <AccordionContent>{item.answer}</AccordionContent>
+            </AccordionItem>
           ))}
-        </div>
+        </Accordion>
       </section>
     </main>
   );
