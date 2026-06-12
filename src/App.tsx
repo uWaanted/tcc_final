@@ -22,6 +22,7 @@ import NewTask from "./pages/newTask";
 import EditTask from "./pages/editTask";
 import NewEvent from "./pages/newEvent";
 import EditEvent from "./pages/editEvent";
+import Explore from "./pages/explore";
 
 function Router({ user }: { user: any }) {
   // 🔐 Rotas públicas
@@ -40,13 +41,18 @@ function Router({ user }: { user: any }) {
     <>
       <Route path="/" component={Home} />
       <Route path="/events" component={Events} />
-      <Route path="/tasks" component={Tasks} />
+      {user.role !== "teacher" && (
+        <>
+          <Route path="/tasks" component={Tasks} />
+          <Route path="/new-task" component={NewTask} />
+          <Route path="/edit-task/:id" component={EditTask} />
+        </>
+      )}
       <Route path="/profile" component={Profile} />
       <Route path="/profileSettings" component={Settings} />
-      <Route path="/new-task" component={NewTask} />
-      <Route path="/edit-task/:id" component={EditTask} />
       <Route path="/new-event" component={NewEvent} />
       <Route path="/edit-event/:id" component={EditEvent} />
+      <Route path="/explore" component={Explore} />
     </>
   );
 }
