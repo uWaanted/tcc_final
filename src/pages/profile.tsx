@@ -178,6 +178,17 @@ export default function Profile() {
         </Card>
       )}
 
+      {/* Configurações */}
+      <Card
+        className="cursor-pointer"
+        onClick={() => setLocation("/profileSettings")}
+      >
+        <CardContent className="p-4 flex items-center space-x-3">
+          <Settings size={20} />
+          <span>Configurações</span>
+        </CardContent>
+      </Card>
+
       {/* Logout */}
       <Card className="cursor-pointer" onClick={handleLogout}>
         <CardContent className="p-4 flex items-center space-x-3 text-red-600">
