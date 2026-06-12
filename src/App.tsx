@@ -20,8 +20,7 @@ import Profile from "./pages/profile";
 import Settings from "./pages/profileSettings";
 import NewTask from "./pages/newTask";
 import EditTask from "./pages/editTask";
-import NewEvent from "./pages/newEvent";
-import EditEvent from "./pages/editEvent";
+
 
 function Router({ user }: { user: any }) {
   // 🔐 Rotas públicas
@@ -45,8 +44,7 @@ function Router({ user }: { user: any }) {
       <Route path="/profileSettings" component={Settings} />
       <Route path="/new-task" component={NewTask} />
       <Route path="/edit-task/:id" component={EditTask} />
-      <Route path="/new-event" component={NewEvent} />
-      <Route path="/edit-event/:id" component={EditEvent} />
+
     </>
   );
 }

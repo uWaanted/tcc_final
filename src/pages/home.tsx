@@ -1,16 +1,8 @@
-import {
-  Calendar,
-  BarChart3,
-  HelpCircle,
-  Share2,
-  LogOut,
-  Search,
-} from "lucide-react";
+import { Calendar, BarChart3, HelpCircle, LogOut } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { useLocation } from "wouter";
-import { useState } from "react";
 
 const menuItems = [
   {
@@ -41,71 +33,129 @@ const menuItems = [
 
 export default function Home() {
   const [, setLocation] = useLocation();
-  const [searchQuery, setSearchQuery] = useState("");
+
+  const user = JSON.parse(localStorage.getItem("facilita-user") || "{}");
+
+  const tasks = JSON.parse(localStorage.getItem("facilita-tasks") || "[]");
+
+  const totalPoints = tasks.reduce(
+    (sum: number, task: any) => sum + Number(task.points || 0),
+    0
+  );
+
+  const recentTasks = [...tasks].slice(-3).reverse();
 
   const logout = () => {
     localStorage.removeItem("facilita-user");
-    window.location.reload();
+    setLocation("/login");
   };
 
-  const shareApp = async () => {
-    if (navigator.share) {
-      await navigator.share({
-        title: "Facilita Horas",
-        text: "Gerencie suas horas complementares facilmente!",
-        url: window.location.href,
-      });
-    } else {
-      await navigator.clipboard.writeText(window.location.href);
-      alert("Link copiado!");
-    }
-  };
+  const COURSE_GOAL = 70;
+
+  const progressPercentage = Math.min((totalPoints / COURSE_GOAL) * 100, 100);
 
   return (
     <main className="px-4 py-6 pb-20 max-w-5xl mx-auto space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Facilita Horas</h1>
-          <p className="text-muted-foreground">
-            Gerencie suas horas complementares
+          <h1 className="text-3xl font-bold">
+            Olá, {user.username?.split(" ")[0]} 👋
+          </h1>
+
+          <p className="text-muted-foreground mt-1">
+            Bem-vindo ao Facilita Horas
           </p>
         </div>
-        <Button variant="ghost" size="sm" onClick={logout}>
-          <LogOut size={16} />
-        </Button>
       </div>
 
-      {/* Busca */}
-      <div className="relative">
-        <Search
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
-          size={18}
-        />
-        <Input
-          placeholder="Buscar eventos ou atividades..."
-          className="pl-10"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
+      {/* Resumo Geral */}
+      <Card>
+        <CardContent className="p-6">
+          <div className="flex justify-between items-center">
+            <div>
+              <p className="text-sm text-muted-foreground">Progresso Geral</p>
+
+              <h2 className="text-3xl font-bold">{totalPoints} pts</h2>
+            </div>
+
+            <div className="text-right">
+              <p className="text-sm text-muted-foreground">Meta do curso</p>
+
+              <p className="font-semibold">{COURSE_GOAL} pts</p>
+            </div>
+          </div>
+
+          <div className="w-full bg-muted rounded-full h-3 mt-4">
+            <div
+              className="bg-primary h-3 rounded-full transition-all"
+              style={{ width: `${progressPercentage}%` }}
+            />
+          </div>
+
+          <p className="text-xs text-muted-foreground mt-2">
+            {progressPercentage.toFixed(0)}% concluído
+          </p>
+
+          {totalPoints >= COURSE_GOAL && (
+            <p className="text-green-600 font-medium mt-2">
+              ✓ Meta do curso atingida
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Dashboard */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card>
+          <CardContent className="p-5 text-center">
+            <p className="text-3xl font-bold">{tasks.length}</p>
+
+            <p className="text-sm text-muted-foreground">Atividades</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-5 text-center">
+            <p className="text-3xl font-bold">{totalPoints}</p>
+
+            <p className="text-sm text-muted-foreground">Pontos</p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-5 text-center">
+            <p className="text-lg font-semibold">
+              {user.role === "teacher" ? "Professor" : user.course || "-"}
+            </p>
+
+            <p className="text-sm text-muted-foreground">
+              {user.role === "teacher" ? "Perfil" : "Curso"}
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Atalhos */}
       <section>
-        <h2 className="text-lg font-semibold mb-4">Atalhos</h2>
-        <div className="grid gap-4 sm:grid-cols-3">
+        <h2 className="text-xl font-semibold mb-4">Atalhos</h2>
+
+        <div className="grid gap-4 md:grid-cols-3">
           {menuItems.map((item) => {
             const Icon = item.icon;
+
             return (
               <Card
                 key={item.id}
                 className="cursor-pointer hover:bg-muted transition"
                 onClick={() => setLocation(item.path)}
               >
-                <CardContent className="p-4 flex items-center gap-3">
-                  <Icon className={item.color} size={22} />
+                <CardContent className="p-5 flex items-center gap-4">
+                  <Icon className={item.color} size={24} />
+
                   <div>
                     <p className="font-medium">{item.title}</p>
+
                     <p className="text-sm text-muted-foreground">
                       {item.description}
                     </p>
@@ -117,14 +167,41 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Ajuda rápida */}
+      {/* Últimas Atividades */}
       <section>
-        <h2 className="text-lg font-semibold mb-3">Ajuda rápida</h2>
-        <div className="space-y-2 text-sm text-muted-foreground">
-          <p>• Como registrar horas complementares</p>
-          <p>• Quais documentos são aceitos</p>
-          <p>• Prazos e limites de entrega</p>
-        </div>
+        <h2 className="text-xl font-semibold mb-4">Últimas atividades</h2>
+
+        {recentTasks.length > 0 ? (
+          <div className="space-y-3">
+            {recentTasks.map((task: any) => (
+              <Card key={task.id}>
+                <CardContent className="p-4">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="font-medium">{task.title}</p>
+
+                      {task.description && (
+                        <p className="text-sm text-muted-foreground">
+                          {task.description}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="text-right">
+                      <p className="font-semibold">{task.points} pts</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <Card>
+            <CardContent className="p-6 text-center text-muted-foreground">
+              Nenhuma atividade cadastrada.
+            </CardContent>
+          </Card>
+        )}
       </section>
     </main>
   );

@@ -7,16 +7,21 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  ActivityGroup,
+  GROUPS,
+  getCategoriesByGroup,
+} from "@/mocks/activityCategories";
 
 export default function EditTask() {
   const [, setLocation] = useLocation();
 
   const [match, params] = useRoute("/edit-task/:id");
 
-  const [title, setTitle] = useState("");
+  const [selectedGroup, setSelectedGroup] = useState<ActivityGroup>("group1");
+  const [quantity, setQuantity] = useState("");
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
-  const [hours, setHours] = useState("");
   const [date, setDate] = useState("");
   const [certificate, setCertificate] = useState("");
 
@@ -31,11 +36,11 @@ export default function EditTask() {
       return;
     }
 
-    setTitle(task.title || "");
+    setSelectedGroup(task.group || "group1");
     setCategory(task.category || "");
     setDescription(task.description || "");
-    setHours(task.hours || "");
     setCertificate(task.certificate || "");
+    setQuantity(task.quantity || "1");
 
     if (task.activityDate) {
       const formattedDate = new Date(task.activityDate)
@@ -47,22 +52,40 @@ export default function EditTask() {
   }, [params?.id, setLocation]);
 
   const handleUpdate = () => {
-    if (!title || !category || !hours || !date) {
+    if (!category || !quantity || !date) {
       alert("Preencha todos os campos obrigatórios.");
       return;
     }
 
     const tasks = JSON.parse(localStorage.getItem("facilita-tasks") || "[]");
 
+    const maxQuantity =
+      (selectedActivity?.maxPoints ?? 0) / (selectedActivity?.points ?? 1);
+
+    if (Number(quantity) > maxQuantity) {
+      alert(
+        `Limite excedido.\n\n` +
+          `Quantidade máxima permitida: ${maxQuantity} ${selectedActivity?.unit}(s).\n` +
+          `Quantidade informada: ${quantity}.`
+      );
+
+      return;
+    }
+
     const updatedTasks = tasks.map((task: any) =>
       task.id === params?.id
         ? {
             ...task,
-            title,
+            title: category,
+            group: selectedGroup,
             category,
-            description,
-            hours,
+            quantity,
+            points: Math.min(
+              (selectedActivity?.points ?? 0) * Number(quantity),
+              selectedActivity?.maxPoints ?? 0
+            ),
             activityDate: new Date(date),
+            description,
             certificate,
           }
         : task
@@ -74,6 +97,12 @@ export default function EditTask() {
 
     setLocation("/tasks");
   };
+
+  const categories = getCategoriesByGroup(selectedGroup);
+
+  const selectedActivity = categories.find(
+    (activity) => activity.name === category
+  );
 
   return (
     <main className="max-w-2xl mx-auto px-4 py-6 pb-20">
@@ -94,11 +123,34 @@ export default function EditTask() {
       <Card>
         <CardContent className="p-6 space-y-5">
           <div className="space-y-2">
-            <Label>Título *</Label>
+            <Label>Grupo *</Label>
 
-            <Input value={title} onChange={(e) => setTitle(e.target.value)} />
+            <div className="grid grid-cols-3 gap-2">
+              <Button
+                type="button"
+                variant={selectedGroup === "group1" ? "default" : "outline"}
+                onClick={() => setSelectedGroup("group1")}
+              >
+                Grupo 1
+              </Button>
+
+              <Button
+                type="button"
+                variant={selectedGroup === "group2" ? "default" : "outline"}
+                onClick={() => setSelectedGroup("group2")}
+              >
+                Grupo 2
+              </Button>
+
+              <Button
+                type="button"
+                variant={selectedGroup === "group3" ? "default" : "outline"}
+                onClick={() => setSelectedGroup("group3")}
+              >
+                Grupo 3
+              </Button>
+            </div>
           </div>
-
           <div className="space-y-2">
             <Label>Categoria *</Label>
 
@@ -107,16 +159,13 @@ export default function EditTask() {
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             >
-              <option value="">Selecione uma categoria</option>
+              <option value="">Selecione uma atividade</option>
 
-              <option value="Evento">Evento</option>
-              <option value="Curso">Curso</option>
-              <option value="Palestra">Palestra</option>
-              <option value="Workshop">Workshop</option>
-              <option value="Projeto de Extensão">Projeto de Extensão</option>
-              <option value="Monitoria">Monitoria</option>
-              <option value="Pesquisa Científica">Pesquisa Científica</option>
-              <option value="Outro">Outro</option>
+              {categories.map((activity) => (
+                <option key={activity.id} value={activity.name}>
+                  {activity.name}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -130,13 +179,15 @@ export default function EditTask() {
           </div>
 
           <div className="space-y-2">
-            <Label>Carga Horária *</Label>
+            <Label>
+              Quantidade de {selectedActivity?.unit || "atividade"} *
+            </Label>
 
             <Input
               type="number"
               min="1"
-              value={hours}
-              onChange={(e) => setHours(e.target.value)}
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
             />
           </div>
 
