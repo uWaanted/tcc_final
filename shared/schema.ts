@@ -60,7 +60,7 @@ export const activities = pgTable("activities", {
 
   description: text("description"),
 
-  hours: numeric("hours"),
+  quantity: numeric("quantity"),
 
   points: numeric("points").notNull(),
 
@@ -83,7 +83,7 @@ export const insertActivitySchema = createInsertSchema(activities).pick({
   group: true,
   category: true,
   description: true,
-  hours: true,
+  quantity: true,
   points: true,
   maxPoints: true,
   unit: true,

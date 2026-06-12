@@ -26,7 +26,7 @@ const initialTasks: ActivityTask[] = [
     title: "Participação em palestras, seminários e eventos sociais",
     category: "Participação em palestras, seminários e eventos sociais",
     description: "Palestra sobre inovação tecnológica",
-    hours: "4",
+    quantity: "4",
     points: "2",
     maxPoints: "10",
     unit: "evento",
@@ -38,28 +38,28 @@ const initialTasks: ActivityTask[] = [
   {
     id: "2",
     group: "group2",
-    title: "Participação em projetos de extensão não remunerados",
-    category: "Participação em projetos de extensão não remunerados",
-    description: "Projeto de extensão voltado à comunidade",
-    hours: "6",
-    points: "4",
+    title: "Doação de sangue",
+    category: "Doação de sangue",
+    description: "Doação realizada no hemocentro",
+    quantity: "1",
+    points: "5",
     maxPoints: "20",
-    unit: "projeto",
+    unit: "doação",
     activityDate: new Date("2024-01-20"),
-    certificate: "extensao.pdf",
+    certificate: "doacao.pdf",
     status: "registered",
   },
 
   {
     id: "3",
     group: "group3",
-    title: "Cursos de fundamento técnico, científico ou de gestão",
-    category: "Cursos de fundamento técnico, científico ou de gestão",
+    title: "Curso de fundamento técnico, científico ou de gestão",
+    category: "Curso de fundamento técnico, científico ou de gestão",
     description: "Curso de fundamentos de React",
-    hours: "3",
+    quantity: "6",
     points: "3",
-    maxPoints: "30",
-    unit: "curso",
+    maxPoints: "20",
+    unit: "hora",
     activityDate: new Date("2024-01-25"),
     certificate: "react.pdf",
     status: "registered",
@@ -100,11 +100,9 @@ export default function Tasks() {
 
   const filteredTasks = tasks.filter((task) => task.group === selectedGroup);
 
-  const approvedTasks = filteredTasks.filter((t) => t.status === "approved");
+  const totalActivities = filteredTasks.length;
 
-  const pendingTasks = filteredTasks.filter((t) => t.status === "pending");
-
-  const totalPoints = approvedTasks.reduce(
+  const totalPoints = filteredTasks.reduce(
     (sum, t) => sum + Number(t.points),
     0
   );
@@ -161,10 +159,26 @@ export default function Tasks() {
         <CardContent className="p-4">
           <h3 className="font-semibold">{GROUPS[selectedGroup].title}</h3>
 
-          <p>Mínimo: {GROUPS[selectedGroup].minPoints}</p>
+          <div className="mt-3 flex gap-6 text-sm">
+            <div>
+              <span className="text-muted-foreground">Mínimo</span>
+              <p className="font-semibold">
+                {GROUPS[selectedGroup].minPoints} pts
+              </p>
+            </div>
 
-          <p>Máximo: {GROUPS[selectedGroup].maxPoints}</p>
+            <div>
+              <span className="text-muted-foreground">Máximo</span>
+              <p className="font-semibold">
+                {GROUPS[selectedGroup].maxPoints} pts
+              </p>
+            </div>
 
+            <div>
+              <span className="text-muted-foreground">Obtidos</span>
+              <p className="font-semibold">{totalPoints} pts</p>
+            </div>
+          </div>
           <p className="mt-3">
             Obtidos: <strong>{totalPoints}</strong> pontos
           </p>
@@ -193,16 +207,22 @@ export default function Tasks() {
         <Card>
           <CardContent className="p-4 text-center">
             <CheckCircle className="mx-auto text-green-600 mb-1" />
-            <p className="text-xl font-bold">{approvedTasks.length}</p>
-            <p className="text-xs text-muted-foreground">Aprovadas</p>
+
+            <p className="text-xl font-bold">{totalActivities}</p>
+
+            <p className="text-xs text-muted-foreground">Atividades</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardContent className="p-4 text-center">
             <Clock className="mx-auto text-orange-600 mb-1" />
-            <p className="text-xl font-bold">{pendingTasks.length}</p>
-            <p className="text-xs text-muted-foreground">Pendentes</p>
+
+            <p className="text-xl font-bold">
+              {progressPercentage.toFixed(0)}%
+            </p>
+
+            <p className="text-xs text-muted-foreground">Meta</p>
           </CardContent>
         </Card>
 
@@ -233,7 +253,11 @@ export default function Tasks() {
                   <div className="flex flex-wrap gap-3 mt-3 text-xs text-muted-foreground">
                     <span>{task.points} pontos</span>
 
-                    {task.hours && <span>{task.hours}h</span>}
+                    {task.quantity && (
+                      <span>
+                        {task.quantity} {task.unit}
+                      </span>
+                    )}
 
                     <span>
                       {new Date(task.activityDate).toLocaleDateString("pt-BR")}
@@ -268,7 +292,7 @@ export default function Tasks() {
                 </div>
 
                 <Badge variant="secondary" className="h-fit whitespace-nowrap">
-                  {task.points} pts
+                  {task.points}/{task.maxPoints} pts
                 </Badge>
               </div>
             </CardContent>

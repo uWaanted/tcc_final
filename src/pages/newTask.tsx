@@ -21,7 +21,7 @@ export default function NewTask() {
   const [selectedGroup, setSelectedGroup] = useState<ActivityGroup>("group1");
 
   const [description, setDescription] = useState("");
-  const [hours, setHours] = useState("");
+  const [quantity, setQuantity] = useState("");
   const [date, setDate] = useState("");
   const [certificate, setCertificate] = useState("");
 
@@ -31,8 +31,30 @@ export default function NewTask() {
   );
 
   const handleSave = () => {
-    if (!category || !hours || !date) {
+    if (!category || !quantity || !date) {
       alert("Preencha todos os campos obrigatórios.");
+      return;
+    }
+
+    const existingTasks = JSON.parse(
+      localStorage.getItem("facilita-tasks") || "[]"
+    );
+
+    const currentCategoryPoints = existingTasks
+      .filter((t: any) => t.category === category)
+      .reduce((sum: number, t: any) => sum + Number(t.points || 0), 0);
+
+    const newPoints = (selectedActivity?.points ?? 0) * Number(quantity);
+
+    const maxPoints = selectedActivity?.maxPoints ?? 0;
+
+    if (currentCategoryPoints + newPoints > maxPoints) {
+      alert(
+        `Limite excedido.\n\n` +
+          `Você já possui ${currentCategoryPoints} ponto(s) nesta atividade.\n` +
+          `O limite máximo é ${maxPoints} ponto(s).`
+      );
+
       return;
     }
 
@@ -42,16 +64,14 @@ export default function NewTask() {
       title: category,
       category,
       description,
-      hours,
-      points: selectedActivity?.points?.toString() ?? "0",
+      quantity,
+      points: newPoints.toString(),
+      maxPoints: maxPoints.toString(),
+      unit: selectedActivity?.unit ?? "",
       activityDate: new Date(date),
       certificate,
       status: "registered",
     };
-
-    const existingTasks = JSON.parse(
-      localStorage.getItem("facilita-tasks") || "[]"
-    );
 
     existingTasks.push(task);
 
@@ -176,14 +196,16 @@ export default function NewTask() {
           </div>
 
           <div className="space-y-2">
-            <Label>Carga Horária *</Label>
+            <Label>
+              Quantidade de {selectedActivity?.unit || "atividade"} *
+            </Label>
 
             <Input
               type="number"
               min="1"
-              placeholder="20"
-              value={hours}
-              onChange={(e) => setHours(e.target.value)}
+              placeholder="1"
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
             />
           </div>
 
