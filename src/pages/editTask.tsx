@@ -59,6 +59,19 @@ export default function EditTask() {
 
     const tasks = JSON.parse(localStorage.getItem("facilita-tasks") || "[]");
 
+    const maxQuantity =
+      (selectedActivity?.maxPoints ?? 0) / (selectedActivity?.points ?? 1);
+
+    if (Number(quantity) > maxQuantity) {
+      alert(
+        `Limite excedido.\n\n` +
+          `Quantidade máxima permitida: ${maxQuantity} ${selectedActivity?.unit}(s).\n` +
+          `Quantidade informada: ${quantity}.`
+      );
+
+      return;
+    }
+
     const updatedTasks = tasks.map((task: any) =>
       task.id === params?.id
         ? {

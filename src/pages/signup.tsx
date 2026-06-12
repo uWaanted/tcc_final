@@ -17,6 +17,7 @@ export default function Signup() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [course, setCourse] = useState("");
 
   const {
     register,
@@ -47,11 +48,17 @@ export default function Signup() {
       return;
     }
 
+    if (data.role === "student" && !course) {
+      setError("Selecione um curso.");
+      return;
+    }
+
     const newUser = {
       email,
       username: data.username,
       password: data.password,
       role: data.role,
+      course: data.role === "student" ? course : "",
     };
 
     users.push(newUser);
@@ -89,7 +96,9 @@ export default function Signup() {
                 <Button
                   type="button"
                   variant={watch("role") === "student" ? "default" : "outline"}
-                  onClick={() => setValue("role", "student")}
+                  onClick={() => {
+                    setValue("role", "student");
+                  }}
                 >
                   Sou Aluno
                 </Button>
@@ -97,7 +106,10 @@ export default function Signup() {
                 <Button
                   type="button"
                   variant={watch("role") === "teacher" ? "default" : "outline"}
-                  onClick={() => setValue("role", "teacher")}
+                  onClick={() => {
+                    setValue("role", "teacher");
+                    setCourse("");
+                  }}
                 >
                   Sou Professor
                 </Button>
@@ -129,6 +141,39 @@ export default function Signup() {
                 </p>
               )}
             </div>
+            {watch("role") === "student" && (
+              <div className="space-y-2">
+                <Label>Curso</Label>
+
+                <select
+                  className="w-full h-10 border rounded-md px-3 bg-background"
+                  value={course}
+                  onChange={(e) => setCourse(e.target.value)}
+                >
+                  <option value="">Selecione um curso</option>
+
+                  <option value="Agronomia">Agronomia</option>
+
+                  <option value="Engenharia Ambiental e Sanitária">
+                    Engenharia Ambiental e Sanitária
+                  </option>
+
+                  <option value="Engenharia de Alimentos">
+                    Engenharia de Alimentos
+                  </option>
+
+                  <option value="Engenharia Química">Engenharia Química</option>
+
+                  <option value="Licenciatura em Informática">
+                    Licenciatura em Informática
+                  </option>
+
+                  <option value="Sistemas de Informação">
+                    Sistemas de Informação
+                  </option>
+                </select>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label>Senha</Label>
