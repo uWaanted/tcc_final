@@ -29,7 +29,9 @@ export default function Profile() {
 
   const handleLogout = () => {
     localStorage.removeItem("facilita-user");
+    localStorage.removeItem("profile-image");
 
+    window.location.href = "/login";
   };
 
   if (!user) return null;
