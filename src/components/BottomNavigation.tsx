@@ -1,5 +1,5 @@
-import { Home, Compass, Bell, User } from 'lucide-react';
-import { useLocation } from 'wouter';
+import { Home, Compass, Bell, User } from "lucide-react";
+import { useLocation } from "wouter";
 
 interface NavItem {
   id: string;
@@ -8,18 +8,26 @@ interface NavItem {
   path: string;
 }
 
-const navItems: NavItem[] = [
-  { id: 'home', label: 'Início', icon: Home, path: '/' },
-  { id: 'events', label: 'Eventos', icon: Compass, path: '/events' },
-  { id: 'activities', label: 'Atividades', icon: Bell, path: '/tasks' },
-  { id: 'profile', label: 'Perfil', icon: User, path: '/profile' },
+const user = JSON.parse(localStorage.getItem("facilita-user") || "{}");
+
+const allNavItems: NavItem[] = [
+  { id: "home", label: "Início", icon: Home, path: "/" },
+  { id: "events", label: "Eventos", icon: Compass, path: "/events" },
+  { id: "activities", label: "Atividades", icon: Bell, path: "/tasks" },
+  { id: "profile", label: "Perfil", icon: User, path: "/profile" },
 ];
+
+const navItems = allNavItems.filter(
+  (item) => !(user.role === "teacher" && item.path === "/tasks")
+);
 
 interface BottomNavigationProps {
   onNavigate: (path: string) => void;
 }
 
-export default function BottomNavigation({ onNavigate }: BottomNavigationProps) {
+export default function BottomNavigation({
+  onNavigate,
+}: BottomNavigationProps) {
   const [location] = useLocation();
 
   return (
@@ -28,12 +36,12 @@ export default function BottomNavigation({ onNavigate }: BottomNavigationProps) 
         {navItems.map((item) => {
           const isActive = location === item.path;
           const IconComponent = item.icon;
-          
+
           return (
             <button
               key={item.id}
               className={`flex flex-col items-center py-2 px-3 transition-colors ${
-                isActive ? 'text-primary' : 'text-muted-foreground'
+                isActive ? "text-primary" : "text-muted-foreground"
               }`}
               onClick={() => onNavigate(item.path)}
               data-testid={`nav-${item.id}`}

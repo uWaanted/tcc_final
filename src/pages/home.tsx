@@ -1,10 +1,9 @@
 import { Calendar, BarChart3, HelpCircle, LogOut } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useLocation } from "wouter";
 
-const menuItems = [
+const allMenuItems = [
   {
     id: "events",
     title: "Eventos",
@@ -45,14 +44,16 @@ export default function Home() {
 
   const recentTasks = [...tasks].slice(-3).reverse();
 
-  const logout = () => {
-    localStorage.removeItem("facilita-user");
-    setLocation("/login");
-  };
-
   const COURSE_GOAL = 70;
-
   const progressPercentage = Math.min((totalPoints / COURSE_GOAL) * 100, 100);
+
+  const menuItems = allMenuItems.filter((item) => {
+    if (user.role === "teacher" && item.id === "activities") {
+      return false;
+    }
+
+    return true;
+  });
 
   return (
     <main className="px-4 py-6 pb-20 max-w-5xl mx-auto space-y-8">
@@ -140,7 +141,11 @@ export default function Home() {
       <section>
         <h2 className="text-xl font-semibold mb-4">Atalhos</h2>
 
-        <div className="grid gap-4 md:grid-cols-3">
+        <div
+          className={`grid gap-4 ${
+            user.role === "teacher" ? "sm:grid-cols-2" : "sm:grid-cols-3"
+          }`}
+        >
           {menuItems.map((item) => {
             const Icon = item.icon;
 
