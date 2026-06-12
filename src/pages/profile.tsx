@@ -33,7 +33,7 @@ export default function Profile() {
 
   const handleLogout = () => {
     localStorage.removeItem("facilita-user");
-    window.location.reload();
+    setLocation("/login");
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,7 +68,9 @@ export default function Profile() {
           <ArrowLeft size={20} />
         </Button>
 
-        <h1 className="text-2xl font-bold ml-2">Perfil do Aluno</h1>
+        <h1 className="text-2xl font-bold ml-2">
+          {user.role === "teacher" ? "Perfil do Professor" : "Perfil do Aluno"}
+        </h1>
       </div>
 
       {/* Perfil */}
@@ -100,9 +102,11 @@ export default function Profile() {
 
             <h3 className="text-xl font-bold">{user.username}</h3>
 
-            <p className="text-muted-foreground">
-              {user.course || "Curso não informado"}
-            </p>
+            {user.role === "student" ? (
+              <p className="text-muted-foreground">{user.course}</p>
+            ) : (
+              <p className="text-muted-foreground">Professor</p>
+            )}
 
             <p className="text-sm text-muted-foreground">UTFPR</p>
           </div>
@@ -136,36 +140,43 @@ export default function Profile() {
       </Card>
 
       {/* Informações Acadêmicas */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Informações Acadêmicas</CardTitle>
-        </CardHeader>
+      {user.role === "student" ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>Informações Acadêmicas</CardTitle>
+          </CardHeader>
 
-        <CardContent className="space-y-4">
-          <div>
-            <p className="font-medium">Curso</p>
-            <p className="text-sm text-muted-foreground">
-              {user.course || "Não informado"}
-            </p>
-          </div>
+          <CardContent className="space-y-4">
+            <div>
+              <p className="font-medium">Curso</p>
+              <p className="text-sm text-muted-foreground">{user.course}</p>
+            </div>
 
-          <div>
-            <p className="font-medium">Instituição</p>
-            <p className="text-sm text-muted-foreground">UTFPR</p>
-          </div>
-        </CardContent>
-      </Card>
+            <div>
+              <p className="font-medium">Instituição</p>
+              <p className="text-sm text-muted-foreground">UTFPR</p>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle>Informações Profissionais</CardTitle>
+          </CardHeader>
 
-      {/* Configurações */}
-      <Card
-        className="cursor-pointer"
-        onClick={() => setLocation("/profileSettings")}
-      >
-        <CardContent className="p-4 flex items-center space-x-3">
-          <Settings size={20} />
-          <span>Configurações</span>
-        </CardContent>
-      </Card>
+          <CardContent className="space-y-4">
+            <div>
+              <p className="font-medium">Função</p>
+              <p className="text-sm text-muted-foreground">Professor</p>
+            </div>
+
+            <div>
+              <p className="font-medium">Instituição</p>
+              <p className="text-sm text-muted-foreground">UTFPR</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Logout */}
       <Card className="cursor-pointer" onClick={handleLogout}>

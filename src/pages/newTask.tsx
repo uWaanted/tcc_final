@@ -52,7 +52,9 @@ export default function NewTask() {
       alert(
         `Limite excedido.\n\n` +
           `Você já possui ${currentCategoryPoints} ponto(s) nesta atividade.\n` +
-          `O limite máximo é ${maxPoints} ponto(s).`
+          `Esta ação adicionaria mais ${newPoints} ponto(s).\n\n` +
+          `Limite permitido: ${maxPoints} ponto(s).\n` +
+          `Total após inclusão: ${currentCategoryPoints + newPoints} ponto(s).`
       );
 
       return;

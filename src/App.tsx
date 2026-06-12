@@ -43,6 +43,7 @@ function Router({ user }: { user: any }) {
       <Route path="/profileSettings" component={Settings} />
       <Route path="/new-task" component={NewTask} />
       <Route path="/edit-task/:id" component={EditTask} />
+      <Route path="/login" component={Login} />
     </>
   );
 }
