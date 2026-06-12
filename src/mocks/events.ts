@@ -7,6 +7,8 @@ export interface Event {
   status: "ongoing" | "upcoming" | "completed";
   group: 1 | 2 | 3;
   date: string;
+  hours: number;
+  points: number;
 }
 
 export const mockEvents: Event[] = [
@@ -20,6 +22,8 @@ export const mockEvents: Event[] = [
     status: "upcoming",
     group: 1,
     date: "2024-11-15",
+    hours: 12,
+    points: 6,
   },
   {
     id: "2",
@@ -31,6 +35,8 @@ export const mockEvents: Event[] = [
     status: "ongoing",
     group: 2,
     date: "2024-10-20",
+    hours: 20,
+    points: 10,
   },
   {
     id: "3",
@@ -42,5 +48,7 @@ export const mockEvents: Event[] = [
     status: "completed",
     group: 1,
     date: "2024-08-10",
+    hours: 4,
+    points: 2,
   },
 ];

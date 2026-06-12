@@ -1,8 +1,8 @@
 export const COURSES: string[] = [
-  "Análise e Desenvolvimento de Sistemas",
+  "Sistemas de Informação",
   "Engenharia Elétrica",
   "Agronomia",
-  "Direito",
-  "Administração",
+  "Engenharia de Alimentos",
+  "Engenharia Ambiental",
   "Licenciatura em Infomática",
 ];
