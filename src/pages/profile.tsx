@@ -4,8 +4,6 @@ import { ArrowLeft, Camera, LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
 import { useLocation } from "wouter";
 import { useEffect, useState } from "react";
 
@@ -29,12 +27,12 @@ export default function Profile() {
     }
   }, []);
 
-  if (!user) return null;
-
   const handleLogout = () => {
     localStorage.removeItem("facilita-user");
-    setLocation("/login");
+
   };
+
+  if (!user) return null;
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
