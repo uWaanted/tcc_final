@@ -35,7 +35,9 @@ export default function Home() {
 
   const user = JSON.parse(localStorage.getItem("facilita-user") || "{}");
 
-  const tasks = JSON.parse(localStorage.getItem("facilita-tasks") || "[]");
+  const savedTasks = localStorage.getItem("facilita-tasks");
+
+  const tasks = savedTasks ? JSON.parse(savedTasks) : [];
 
   const totalPoints = tasks.reduce(
     (sum: number, task: any) => sum + Number(task.points || 0),
@@ -71,68 +73,87 @@ export default function Home() {
       </div>
 
       {/* Resumo Geral */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="text-sm text-muted-foreground">Progresso Geral</p>
+      {user.role !== "teacher" && (
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="text-sm text-muted-foreground">Progresso Geral</p>
 
-              <h2 className="text-3xl font-bold">{totalPoints} pts</h2>
+                <h2 className="text-3xl font-bold">{totalPoints} pts</h2>
+              </div>
+
+              <div className="text-right">
+                <p className="text-sm text-muted-foreground">Meta do curso</p>
+
+                <p className="font-semibold">{COURSE_GOAL} pts</p>
+              </div>
             </div>
 
-            <div className="text-right">
-              <p className="text-sm text-muted-foreground">Meta do curso</p>
-
-              <p className="font-semibold">{COURSE_GOAL} pts</p>
+            <div className="w-full bg-muted rounded-full h-3 mt-4">
+              <div
+                className="bg-primary h-3 rounded-full transition-all"
+                style={{ width: `${progressPercentage}%` }}
+              />
             </div>
-          </div>
 
-          <div className="w-full bg-muted rounded-full h-3 mt-4">
-            <div
-              className="bg-primary h-3 rounded-full transition-all"
-              style={{ width: `${progressPercentage}%` }}
-            />
-          </div>
-
-          <p className="text-xs text-muted-foreground mt-2">
-            {progressPercentage.toFixed(0)}% concluído
-          </p>
-
-          {totalPoints >= COURSE_GOAL && (
-            <p className="text-green-600 font-medium mt-2">
-              ✓ Meta do curso atingida
+            <p className="text-xs text-muted-foreground mt-2">
+              {progressPercentage.toFixed(0)}% concluído
             </p>
-          )}
-        </CardContent>
-      </Card>
+
+            {totalPoints >= COURSE_GOAL && (
+              <p className="text-green-600 font-medium mt-2">
+                ✓ Meta do curso atingida
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Dashboard */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div
+        className={`grid gap-4 ${
+          user.role === "teacher" ? "grid-cols-1" : "grid-cols-1 md:grid-cols-3"
+        }`}
+      >
+        {user.role !== "teacher" && (
+          <>
+            <Card>
+              <CardContent className="p-5 text-center">
+                <p className="text-3xl font-bold">{tasks.length}</p>
+
+                <p className="text-sm text-muted-foreground">Atividades</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-5 text-center">
+                <p className="text-3xl font-bold">{totalPoints}</p>
+
+                <p className="text-sm text-muted-foreground">Pontos</p>
+              </CardContent>
+            </Card>
+          </>
+        )}
+
         <Card>
           <CardContent className="p-5 text-center">
-            <p className="text-3xl font-bold">{tasks.length}</p>
+            {user.role === "teacher" ? (
+              <>
+                <p className="text-lg font-semibold">Painel do Professor</p>
 
-            <p className="text-sm text-muted-foreground">Atividades</p>
-          </CardContent>
-        </Card>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Acesso às informações e orientações sobre atividades
+                  complementares
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-lg font-semibold">{user.course || "-"}</p>
 
-        <Card>
-          <CardContent className="p-5 text-center">
-            <p className="text-3xl font-bold">{totalPoints}</p>
-
-            <p className="text-sm text-muted-foreground">Pontos</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-5 text-center">
-            <p className="text-lg font-semibold">
-              {user.role === "teacher" ? "Professor" : user.course || "-"}
-            </p>
-
-            <p className="text-sm text-muted-foreground">
-              {user.role === "teacher" ? "Perfil" : "Curso"}
-            </p>
+                <p className="text-sm text-muted-foreground">Curso</p>
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -173,41 +194,43 @@ export default function Home() {
       </section>
 
       {/* Últimas Atividades */}
-      <section>
-        <h2 className="text-xl font-semibold mb-4">Últimas atividades</h2>
+      {user.role !== "teacher" && (
+        <section>
+          <h2 className="text-xl font-semibold mb-4">Últimas atividades</h2>
 
-        {recentTasks.length > 0 ? (
-          <div className="space-y-3">
-            {recentTasks.map((task: any) => (
-              <Card key={task.id}>
-                <CardContent className="p-4">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="font-medium">{task.title}</p>
+          {recentTasks.length > 0 ? (
+            <div className="space-y-3">
+              {recentTasks.map((task: any) => (
+                <Card key={task.id}>
+                  <CardContent className="p-4">
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <p className="font-medium">{task.title}</p>
 
-                      {task.description && (
-                        <p className="text-sm text-muted-foreground">
-                          {task.description}
-                        </p>
-                      )}
+                        {task.description && (
+                          <p className="text-sm text-muted-foreground">
+                            {task.description}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="text-right">
+                        <p className="font-semibold">{task.points} pts</p>
+                      </div>
                     </div>
-
-                    <div className="text-right">
-                      <p className="font-semibold">{task.points} pts</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <Card>
-            <CardContent className="p-6 text-center text-muted-foreground">
-              Nenhuma atividade cadastrada.
-            </CardContent>
-          </Card>
-        )}
-      </section>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card>
+              <CardContent className="p-6 text-center text-muted-foreground">
+                Nenhuma atividade cadastrada.
+              </CardContent>
+            </Card>
+          )}
+        </section>
+      )}
     </main>
   );
 }
