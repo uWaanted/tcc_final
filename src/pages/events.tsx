@@ -25,7 +25,7 @@ const statusLabels: Record<Event["status"], string> = {
 
 export default function Events() {
   const [, setLocation] = useLocation();
-
+  const [user, setUser] = useState<any>(null);
   const [events, setEvents] = useState<Event[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -35,6 +35,12 @@ export default function Events() {
   const [selectedGroup, setSelectedGroup] = useState<0 | 1 | 2 | 3>(0);
 
   useEffect(() => {
+    const savedUser = localStorage.getItem("facilita-user");
+
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+
     const savedEvents = JSON.parse(
       localStorage.getItem("facilita-events") || "[]"
     );
@@ -48,6 +54,11 @@ export default function Events() {
   }, []);
 
   const deleteEvent = (id: string) => {
+    if (user?.role !== "teacher") {
+      alert("Apenas professores podem excluir eventos.");
+      return;
+    }
+
     const updatedEvents = events.filter((event) => event.id !== id);
 
     setEvents(updatedEvents);
@@ -125,10 +136,12 @@ export default function Events() {
           <h1 className="text-2xl font-bold ml-2">Eventos</h1>
         </div>
 
-        <Button size="sm" onClick={() => setLocation("/new-event")}>
-          <Plus size={16} className="mr-1" />
-          Adicionar
-        </Button>
+        {user?.role === "teacher" && (
+          <Button size="sm" onClick={() => setLocation("/new-event")}>
+            <Plus size={16} className="mr-1" />
+            Adicionar
+          </Button>
+        )}
       </div>
 
       {/* Busca */}
@@ -264,23 +277,27 @@ export default function Events() {
                   Participar
                 </Button>
 
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setLocation(`/edit-event/${event.id}`)}
-                >
-                  <Pencil size={14} className="mr-1" />
-                  Editar
-                </Button>
+                {user?.role === "teacher" && (
+                  <>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setLocation(`/edit-event/${event.id}`)}
+                    >
+                      <Pencil size={14} className="mr-1" />
+                      Editar
+                    </Button>
 
-                <Button
-                  size="sm"
-                  variant="destructive"
-                  onClick={() => deleteEvent(event.id)}
-                >
-                  <Trash2 size={14} className="mr-1" />
-                  Excluir
-                </Button>
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => deleteEvent(event.id)}
+                    >
+                      <Trash2 size={14} className="mr-1" />
+                      Excluir
+                    </Button>
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>
