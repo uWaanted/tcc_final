@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { ArrowLeft } from "lucide-react";
 
+import { getCategoriesByGroup } from "@/mocks/activityCategories";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,14 +18,18 @@ export default function NewEvent() {
   const [category, setCategory] = useState("");
   const [group, setGroup] = useState<1 | 2 | 3>(1);
   const [date, setDate] = useState("");
-  const [hours, setHours] = useState("");
-  const [points, setPoints] = useState("");
   const [status, setStatus] = useState<"upcoming" | "ongoing" | "completed">(
     "upcoming"
   );
 
+  const groupKey = `group${group}` as "group1" | "group2" | "group3";
+
+  const categories = getCategoriesByGroup(groupKey);
+
+  const activity = categories.find((a) => a.name === category);
+
   const handleSave = () => {
-    if (!title || !locationText || !category || !date || !hours || !points) {
+    if (!title || !locationText || !category || !date) {
       alert("Preencha todos os campos obrigatórios.");
       return;
     }
@@ -38,8 +43,9 @@ export default function NewEvent() {
       group,
       date,
       status,
-      hours: Number(hours),
-      points: Number(points),
+      points: activity?.points ?? 0,
+      maxPoints: activity?.maxPoints ?? 0,
+      unit: activity?.unit ?? "",
     };
 
     const existingEvents = JSON.parse(
@@ -95,33 +101,52 @@ export default function NewEvent() {
           </div>
 
           <div className="space-y-2">
-            <Label>Categoria *</Label>
-            <select
-              className="w-full h-10 border rounded-md px-3 bg-background"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
-              <option value="">Selecione</option>
-              <option value="Tecnologia">Tecnologia</option>
-              <option value="Educação">Educação</option>
-              <option value="Saúde">Saúde</option>
-              <option value="Negócios">Negócios</option>
-              <option value="Meio Ambiente">Meio Ambiente</option>
-            </select>
-          </div>
-
-          <div className="space-y-2">
             <Label>Grupo *</Label>
             <select
               className="w-full h-10 border rounded-md px-3 bg-background"
               value={group}
-              onChange={(e) => setGroup(Number(e.target.value) as 1 | 2 | 3)}
+              onChange={(e) => {
+                setGroup(Number(e.target.value) as 1 | 2 | 3);
+                setCategory("");
+              }}
             >
               <option value={1}>Grupo 1</option>
               <option value={2}>Grupo 2</option>
               <option value={3}>Grupo 3</option>
             </select>
           </div>
+
+          <div className="space-y-2">
+            <Label>Categoria *</Label>
+            <select
+              className="w-full h-10 border rounded-md px-3 bg-background"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <option value="">Selecione uma atividade</option>
+
+              {categories.map((activity) => (
+                <option key={activity.id} value={activity.name}>
+                  {activity.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          {activity && (
+            <Card>
+              <CardContent className="p-4">
+                <p className="font-medium">Informações da atividade</p>
+
+                <p className="text-sm text-muted-foreground">
+                  {activity.points} ponto(s) por {activity.unit}
+                </p>
+
+                <p className="text-sm text-muted-foreground">
+                  Limite máximo: {activity.maxPoints} pontos
+                </p>
+              </CardContent>
+            </Card>
+          )}
 
           <div className="space-y-2">
             <Label>Data *</Label>
@@ -147,26 +172,6 @@ export default function NewEvent() {
               <option value="ongoing">Em andamento</option>
               <option value="completed">Finalizado</option>
             </select>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Carga Horária *</Label>
-            <Input
-              type="number"
-              min="1"
-              value={hours}
-              onChange={(e) => setHours(e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label>Pontos *</Label>
-            <Input
-              type="number"
-              min="1"
-              value={points}
-              onChange={(e) => setPoints(e.target.value)}
-            />
           </div>
 
           <div className="flex gap-3 pt-4">

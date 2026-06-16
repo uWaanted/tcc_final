@@ -54,18 +54,23 @@ export default function Events() {
   }, []);
 
   const deleteEvent = (id: string) => {
-    if (user?.role !== "teacher") {
-      alert("Apenas professores podem excluir eventos.");
-      return;
-    }
+    const confirmed = window.confirm("Deseja realmente excluir este evento?");
+
+    if (!confirmed) return;
 
     const updatedEvents = events.filter((event) => event.id !== id);
 
     setEvents(updatedEvents);
+
     localStorage.setItem("facilita-events", JSON.stringify(updatedEvents));
   };
 
   const handleParticipate = (event: Event) => {
+    if (user?.role !== "student") {
+      alert("Apenas alunos podem participar de eventos.");
+      return;
+    }
+
     const existingTasks = JSON.parse(
       localStorage.getItem("facilita-tasks") || "[]"
     );
@@ -87,8 +92,9 @@ export default function Events() {
       title: "Participação em evento",
       category: "Evento",
       description: `Participação no evento: ${event.title}`,
-      hours: event.hours.toString(),
       points: event.points.toString(),
+      maxPoints: event.maxPoints?.toString() || "0",
+      unit: event.unit || "",
       activityDate: new Date(),
       certificate: "",
       status: "registered",
@@ -101,13 +107,7 @@ export default function Events() {
     alert("Participação registrada em Atividades!");
   };
 
-  const categories = [
-    "Tecnologia",
-    "Meio Ambiente",
-    "Saúde",
-    "Educação",
-    "Negócios",
-  ];
+  const categories = [...new Set(events.map((event) => event.category))];
 
   const filteredEvents = events.filter((event) => {
     const matchesSearch =
@@ -133,7 +133,9 @@ export default function Events() {
             <ArrowLeft size={20} />
           </Button>
 
-          <h1 className="text-2xl font-bold ml-2">Eventos</h1>
+          <h1 className="text-2xl font-bold ml-2">
+            {user?.role === "teacher" ? "Gerenciamento de Eventos" : "Eventos"}
+          </h1>
         </div>
 
         {user?.role === "teacher" && (
@@ -264,19 +266,19 @@ export default function Events() {
               </div>
 
               <div className="text-sm text-muted-foreground">
-                {event.hours}h • {event.points} pontos
+                {event.points} ponto(s) • Limite {event.maxPoints} pontos
               </div>
-
               <div className="flex gap-2 flex-wrap">
                 <Badge variant="outline">{event.category}</Badge>
                 <Badge variant="secondary">Grupo {event.group}</Badge>
               </div>
 
               <div className="flex gap-2 pt-2 flex-wrap">
-                <Button size="sm" onClick={() => handleParticipate(event)}>
-                  Participar
-                </Button>
-
+                {user?.role === "student" && (
+                  <Button size="sm" onClick={() => handleParticipate(event)}>
+                    Participar
+                  </Button>
+                )}
                 {user?.role === "teacher" && (
                   <>
                     <Button
