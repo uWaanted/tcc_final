@@ -25,17 +25,20 @@ export default function ProfileSettings() {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [course, setCourse] = useState("");
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
     const savedUser = localStorage.getItem("facilita-user");
 
     if (savedUser) {
-      const user = JSON.parse(savedUser);
+      const userData = JSON.parse(savedUser);
 
-      setUsername(user.username || "");
-      setEmail(user.email || "");
-      setPhone(user.phone || "");
-      setCourse(user.course || "");
+      setUser(userData);
+
+      setUsername(userData.username || "");
+      setEmail(userData.email || "");
+      setPhone(userData.phone || "");
+      setCourse(userData.course || "");
     }
   }, []);
 
@@ -51,7 +54,7 @@ export default function ProfileSettings() {
       username,
       email,
       phone,
-      course,
+      course: user.role === "student" ? course : "",
       institution: "UTFPR",
     };
 
@@ -112,23 +115,25 @@ export default function ProfileSettings() {
             />
           </div>
 
-          <div>
-            <label className="text-sm font-medium">Curso</label>
+          {user?.role === "student" && (
+            <div>
+              <label className="text-sm font-medium">Curso</label>
 
-            <Select value={course} onValueChange={setCourse}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecione seu curso" />
-              </SelectTrigger>
+              <Select value={course} onValueChange={setCourse}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione seu curso" />
+                </SelectTrigger>
 
-              <SelectContent>
-                {COURSES.map((courseOption) => (
-                  <SelectItem key={courseOption} value={courseOption}>
-                    {courseOption}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+                <SelectContent>
+                  {COURSES.map((courseOption) => (
+                    <SelectItem key={courseOption} value={courseOption}>
+                      {courseOption}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <Button className="w-full" onClick={handleSave}>
             <Save size={16} className="mr-2" />

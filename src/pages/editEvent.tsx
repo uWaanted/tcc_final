@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import { useLocation, useRoute } from "wouter";
 import { ArrowLeft } from "lucide-react";
 
+import {
+  ActivityGroup,
+  getCategoriesByGroup,
+} from "@/mocks/activityCategories";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -16,9 +20,15 @@ export default function EditEvent() {
   const [description, setDescription] = useState("");
   const [locationEvent, setLocationEvent] = useState("");
   const [category, setCategory] = useState("");
-  const [group, setGroup] = useState("1");
+  const [group, setGroup] = useState<ActivityGroup>("group1");
   const [date, setDate] = useState("");
   const [status, setStatus] = useState("upcoming");
+
+  const categories = getCategoriesByGroup(group);
+
+  const selectedActivity = categories.find(
+    (activity) => activity.name === category
+  );
 
   useEffect(() => {
     const events = JSON.parse(localStorage.getItem("facilita-events") || "[]");
@@ -35,7 +45,9 @@ export default function EditEvent() {
     setDescription(event.description || "");
     setLocationEvent(event.location || "");
     setCategory(event.category || "");
-    setGroup(String(event.group || 1));
+    setGroup(
+      event.group === 2 ? "group2" : event.group === 3 ? "group3" : "group1"
+    );
     setStatus(event.status || "upcoming");
 
     if (event.date) {
@@ -59,7 +71,10 @@ export default function EditEvent() {
             description,
             location: locationEvent,
             category,
-            group: Number(group),
+            group: group === "group2" ? 2 : group === "group3" ? 3 : 1,
+            points: selectedActivity?.points ?? 0,
+            maxPoints: selectedActivity?.maxPoints ?? 0,
+            unit: selectedActivity?.unit ?? "",
             date,
             status,
           }
@@ -114,10 +129,35 @@ export default function EditEvent() {
 
           <div className="space-y-2">
             <Label>Categoria *</Label>
-            <Input
+            <select
+              className="w-full h-10 border rounded-md px-3 bg-background"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-            />
+            >
+              <option value="">Selecione uma atividade</option>
+
+              {categories.map((activity) => (
+                <option key={activity.id} value={activity.name}>
+                  {activity.name}
+                </option>
+              ))}
+            </select>
+            {selectedActivity && (
+              <Card>
+                <CardContent className="p-4">
+                  <p className="font-medium">Informações da atividade</p>
+
+                  <p className="text-sm text-muted-foreground">
+                    {selectedActivity.points} ponto(s) por{" "}
+                    {selectedActivity.unit}
+                  </p>
+
+                  <p className="text-sm text-muted-foreground">
+                    Limite máximo: {selectedActivity.maxPoints} pontos
+                  </p>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -125,11 +165,14 @@ export default function EditEvent() {
             <select
               className="w-full h-10 border rounded-md px-3 bg-background"
               value={group}
-              onChange={(e) => setGroup(e.target.value)}
+              onChange={(e) => {
+                setGroup(e.target.value as ActivityGroup);
+                setCategory("");
+              }}
             >
-              <option value="1">Grupo 1</option>
-              <option value="2">Grupo 2</option>
-              <option value="3">Grupo 3</option>
+              <option value="group1">Grupo 1</option>
+              <option value="group2">Grupo 2</option>
+              <option value="group3">Grupo 3</option>
             </select>
           </div>
 
