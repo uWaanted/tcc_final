@@ -17,6 +17,8 @@ import { ActivityGroup, GROUPS } from "@/mocks/activityCategories";
 type ActivityTask = InsertActivity & {
   id: string;
   group: ActivityGroup;
+  time?: string;
+  eventDate?: string;
 };
 
 const initialTasks: ActivityTask[] = [
@@ -31,6 +33,7 @@ const initialTasks: ActivityTask[] = [
     maxPoints: "10",
     unit: "evento",
     activityDate: new Date("2024-01-14"),
+    time: "14:00",
     certificate: "palestra.pdf",
     status: "registered",
   },
@@ -46,6 +49,7 @@ const initialTasks: ActivityTask[] = [
     maxPoints: "20",
     unit: "doação",
     activityDate: new Date("2024-01-20"),
+    time: "13:00",
     certificate: "doacao.pdf",
     status: "registered",
   },
@@ -61,6 +65,7 @@ const initialTasks: ActivityTask[] = [
     maxPoints: "20",
     unit: "hora",
     activityDate: new Date("2024-01-25"),
+    time: "19:00",
     certificate: "react.pdf",
     status: "registered",
   },
@@ -260,7 +265,10 @@ export default function Tasks() {
                     )}
 
                     <span>
-                      {new Date(task.activityDate).toLocaleDateString("pt-BR")}
+                      {new Date(
+                        task.eventDate || task.activityDate
+                      ).toLocaleDateString("pt-BR")}
+                      {task.time && ` às ${task.time}`}
                     </span>
                   </div>
 
