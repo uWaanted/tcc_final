@@ -22,6 +22,7 @@ export default function EditEvent() {
   const [category, setCategory] = useState("");
   const [group, setGroup] = useState<ActivityGroup>("group1");
   const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
   const [status, setStatus] = useState("upcoming");
 
   const categories = getCategoriesByGroup(group);
@@ -53,10 +54,11 @@ export default function EditEvent() {
     if (event.date) {
       setDate(event.date);
     }
+    setTime(event.time || "");
   }, [params?.id, setLocation]);
 
   const handleSave = () => {
-    if (!title || !category || !locationEvent || !date) {
+    if (!title || !category || !locationEvent || !date || !time) {
       alert("Preencha todos os campos obrigatórios.");
       return;
     }
@@ -76,6 +78,7 @@ export default function EditEvent() {
             maxPoints: selectedActivity?.maxPoints ?? 0,
             unit: selectedActivity?.unit ?? "",
             date,
+            time,
             status,
           }
         : event
@@ -182,6 +185,15 @@ export default function EditEvent() {
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Horário *</Label>
+            <Input
+              type="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
             />
           </div>
 
