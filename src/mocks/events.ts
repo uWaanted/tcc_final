@@ -7,6 +7,7 @@ export interface Event {
   status: "ongoing" | "upcoming" | "completed";
   group: 1 | 2 | 3;
   date: string;
+  time: string;
   points: number;
   maxPoints: number;
   unit: string;
@@ -23,6 +24,7 @@ export const mockEvents: Event[] = [
     status: "upcoming",
     group: 1,
     date: "2026-11-15",
+    time: "19:30",
     points: 2,
     maxPoints: 10,
     unit: "evento",
@@ -38,6 +40,7 @@ export const mockEvents: Event[] = [
     status: "ongoing",
     group: 2,
     date: "2026-10-20",
+    time: "18:00",
     points: 5,
     maxPoints: 20,
     unit: "projeto",
@@ -53,6 +56,7 @@ export const mockEvents: Event[] = [
     status: "completed",
     group: 1,
     date: "2026-08-10",
+    time: "19:00",
     points: 1,
     maxPoints: 10,
     unit: "palestra",

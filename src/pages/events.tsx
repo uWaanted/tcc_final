@@ -262,7 +262,8 @@ export default function Events() {
 
               <div className="flex items-center text-sm text-muted-foreground">
                 <Calendar size={14} className="mr-2" />
-                {new Date(event.date).toLocaleDateString("pt-BR")}
+                {new Date(event.date).toLocaleDateString("pt-BR")} às{" "}
+                {event.time}
               </div>
 
               <div className="text-sm text-muted-foreground">

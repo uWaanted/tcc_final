@@ -18,6 +18,7 @@ export default function NewEvent() {
   const [category, setCategory] = useState("");
   const [group, setGroup] = useState<1 | 2 | 3>(1);
   const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
   const [status, setStatus] = useState<"upcoming" | "ongoing" | "completed">(
     "upcoming"
   );
@@ -29,7 +30,7 @@ export default function NewEvent() {
   const activity = categories.find((a) => a.name === category);
 
   const handleSave = () => {
-    if (!title || !locationText || !category || !date) {
+    if (!title || !locationText || !category || !date || !time) {
       alert("Preencha todos os campos obrigatórios.");
       return;
     }
@@ -42,6 +43,7 @@ export default function NewEvent() {
       category,
       group,
       date,
+      time,
       status,
       points: activity?.points ?? 0,
       maxPoints: activity?.maxPoints ?? 0,
@@ -154,6 +156,15 @@ export default function NewEvent() {
               type="date"
               value={date}
               onChange={(e) => setDate(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Horário *</Label>
+            <Input
+              type="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
             />
           </div>
 
