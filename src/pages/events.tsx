@@ -96,6 +96,8 @@ export default function Events() {
       maxPoints: event.maxPoints?.toString() || "0",
       unit: event.unit || "",
       activityDate: new Date(),
+      eventDate: event.date,
+      time: event.time,
       certificate: "",
       status: "registered",
     };
