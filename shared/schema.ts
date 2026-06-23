@@ -1,3 +1,9 @@
+/**
+ * Estrutura de banco de dados planejada para futura
+ * implementação do backend do FacilitaHoras.
+ * Atualmente a aplicação utiliza LocalStorage.
+ */
+
 import { sql } from "drizzle-orm";
 import {
   pgTable,
@@ -32,19 +38,23 @@ export const events = pgTable("events", {
 
   title: text("title").notNull(),
 
-  description: text("description").notNull(),
+  description: text("description"),
 
   location: text("location").notNull(),
 
-  date: timestamp("date").notNull(),
-
-  rating: numeric("rating").notNull().default("0"),
-
-  imageUrl: text("image_url").notNull(),
-
   category: text("category").notNull(),
 
-  status: text("status").notNull().default("upcoming"), // upcoming, ongoing, completed
+group: text("group").notNull(),
+
+  date: timestamp("date").notNull(),
+
+  status: text("status").notNull().default("upcoming"),
+
+  points: numeric("points").notNull(),
+
+  maxPoints: numeric("max_points"),
+
+  unit: text("unit"),
 });
 
 export const activities = pgTable("activities", {
@@ -130,11 +140,13 @@ export const insertEventSchema = createInsertSchema(events).pick({
   title: true,
   description: true,
   location: true,
-  date: true,
-  rating: true,
-  imageUrl: true,
   category: true,
+  group: true,
+  date: true,
   status: true,
+  points: true,
+  maxPoints: true,
+  unit: true,
 });
 
 // Types
