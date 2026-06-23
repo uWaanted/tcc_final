@@ -1,8 +1,5 @@
 import { Route, useLocation } from "wouter";
-import { QueryClientProvider } from "@tanstack/react-query";
-import { queryClient } from "./lib/queryClient";
 import { TooltipProvider } from "./components/ui/tooltip";
-import { Toaster } from "./components/ui/toaster";
 import { useEffect, useState } from "react";
 
 // Componentes usados
@@ -72,7 +69,6 @@ export default function App() {
   const isAuthPage = location === "/login" || location === "/signup";
 
   return (
-    <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <div className="min-h-screen bg-background">
           {/* Header apenas quando logado */}
@@ -85,9 +81,7 @@ export default function App() {
           {/* Navegação inferior apenas quando logado */}
           {user && !isAuthPage && <BottomNavigation onNavigate={setLocation} />}
 
-          <Toaster />
         </div>
       </TooltipProvider>
-    </QueryClientProvider>
   );
 }
