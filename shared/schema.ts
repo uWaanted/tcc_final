@@ -1,6 +1,5 @@
 /**
- * Estrutura de banco de dados planejada para futura
- * implementação do backend do FacilitaHoras.
+ * Futura implementação do backend do FacilitaHoras.
  * Atualmente a aplicação utiliza LocalStorage.
  */
 
@@ -15,7 +14,6 @@ import {
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
-// Users table for Facilita Horas
 export const users = pgTable("users", {
   id: varchar("id")
     .primaryKey()
@@ -30,7 +28,6 @@ export const users = pgTable("users", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// Events table for Facilita Horas
 export const events = pgTable("events", {
   id: varchar("id")
     .primaryKey()
@@ -44,7 +41,7 @@ export const events = pgTable("events", {
 
   category: text("category").notNull(),
 
-group: text("group").notNull(),
+  group: text("group").notNull(),
 
   date: timestamp("date").notNull(),
 
@@ -87,7 +84,6 @@ export const activities = pgTable("activities", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-// User schemas
 export const insertActivitySchema = createInsertSchema(activities).pick({
   title: true,
   group: true,
@@ -135,7 +131,6 @@ export const signupSchema = z
     path: ["confirmPassword"],
   });
 
-// Event schemas
 export const insertEventSchema = createInsertSchema(events).pick({
   title: true,
   description: true,
@@ -149,7 +144,6 @@ export const insertEventSchema = createInsertSchema(events).pick({
   unit: true,
 });
 
-// Types
 export type Activity = typeof activities.$inferSelect;
 
 export type InsertActivity = z.infer<typeof insertActivitySchema>;
@@ -166,7 +160,6 @@ export type Event = typeof events.$inferSelect;
 
 export type InsertEvent = z.infer<typeof insertEventSchema>;
 
-// Event filters and search
 export type EventFilters = {
   category?: string;
   status?: "upcoming" | "ongoing" | "completed";
