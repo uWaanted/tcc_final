@@ -5,13 +5,13 @@ import { Button } from "@/components/ui/button";
 export default function ProfileAvatar() {
   const [image, setImage] = useState<string | null>(null);
 
-  // 🔹 Carrega imagem salva
+  
   useEffect(() => {
     const savedImage = localStorage.getItem("profile-image");
     if (savedImage) setImage(savedImage);
   }, []);
 
-  // 🔹 Quando o usuário escolhe uma imagem
+  
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;

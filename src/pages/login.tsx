@@ -26,10 +26,8 @@ export default function Login() {
   const onSubmit = (data: LoginData) => {
     setError("");
 
-    // 🔹 Recupera lista de usuários cadastrados
     const users = JSON.parse(localStorage.getItem("facilita-users") || "[]");
 
-    // 🔹 Procura usuário pelo email e senha
     const user = users.find(
       (u: any) => u.email === data.email && u.password === data.password
     );
@@ -39,7 +37,6 @@ export default function Login() {
       return;
     }
 
-    // 🔹 Salva usuário logado (sessão)
     localStorage.setItem("facilita-user", JSON.stringify(user));
 
     window.location.href = "/";

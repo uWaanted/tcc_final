@@ -22,7 +22,7 @@ import EditEvent from "./pages/editEvent";
 import Explore from "./pages/explore";
 
 function Router({ user }: { user: any }) {
-  // 🔐 Rotas públicas
+  // Rotas públicas
   if (!user) {
     return (
       <>
@@ -33,7 +33,7 @@ function Router({ user }: { user: any }) {
     );
   }
 
-  // 🔓 Rotas privadas
+  // Rotas privadas
   return (
     <>
       <Route path="/" component={Home} />
